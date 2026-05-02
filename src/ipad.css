@@ -1,0 +1,331 @@
+/* -------------------------------------------------------------
+   IPAD PAGE CSS: APPLE CINEMATIC DESIGN SYSTEM
+------------------------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* 1. CORE VARIABLES & BASE SYSTEM */
+:root {
+    --ipad-bg: #000000;
+    --ipad-text: #f5f5f7;
+    --ipad-muted: #86868b;
+    --ipad-link: #2997ff;
+    --ipad-nav-bg: rgba(0, 0, 0, 0.7);
+    --ipad-panel-bg: rgba(20, 20, 22, 0.6);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body#body-bg {
+    background-color: var(--ipad-bg);
+    color: var(--ipad-text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    transition: background-color 0.8s ease-out;
+}
+
+/* 2. CANVAS & 3D INTEGRATION */
+.canvas-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    /* Always behind the scroll content */
+    pointer-events: none;
+}
+
+canvas#webgl {
+    display: block;
+    width: 100%;
+    height: 100%;
+    outline: none;
+}
+
+main#smooth-wrapper {
+    position: relative;
+    z-index: 10;
+}
+
+/* 3. GLASSMORPHISM NAVBAR */
+.apple-nav {
+    background: var(--ipad-nav-bg) !important;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    /* Premium edge rim */
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    padding: 0.6rem 0;
+    transition: background 0.3s ease;
+    z-index: 1000;
+}
+
+.apple-nav .nav-link {
+    color: rgba(245, 245, 247, 0.7) !important;
+    padding: 0.5rem 1rem !important;
+    transition: color 0.3s ease;
+}
+
+.apple-nav .nav-link:hover,
+.apple-nav .nav-link.nav-active {
+    color: var(--ipad-text) !important;
+}
+
+.nav-icon {
+    font-size: 1.25rem;
+    color: var(--ipad-text) !important;
+    opacity: 0.9;
+    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.nav-icon:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* 4. SCROLL STORYTELLING LAYOUT */
+.scroll-section {
+    min-height: 160vh;
+    /* Extremely tall sections for comfortable scrubbing */
+    position: relative;
+    padding-top: 100px;
+    display: flex;
+    align-items: center;
+}
+
+#section-hero {
+    min-height: 100vh;
+    /* Hero section is fixed height */
+    padding-top: 15vh;
+    align-items: flex-start;
+    justify-content: center;
+    text-align: center;
+}
+
+#section-final {
+    min-height: 100vh;
+    justify-content: center;
+    text-align: center;
+}
+
+/* 5. TYPOGRAPHY SYSTEM */
+.hero-title {
+    font-size: clamp(3.5rem, 8vw, 6.5rem);
+    font-weight: 800;
+    color: var(--ipad-text);
+    margin-bottom: 0.3rem;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+}
+
+.hero-subtitle {
+    font-size: clamp(1.25rem, 3vw, 2.2rem);
+    font-weight: 500;
+    color: transparent;
+    background: linear-gradient(90deg, #ffffff, #a1a1a6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    margin-bottom: 2rem;
+    letter-spacing: -0.02em;
+}
+
+.display-3 {
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 1.1;
+    color: var(--ipad-text);
+    text-shadow: 0px 4px 40px rgba(0, 0, 0, 0.9), 0px 2px 10px rgba(0, 0, 0, 0.6);
+    margin-bottom: 1rem;
+}
+
+.lead {
+    color: #a1a1a6;
+    font-size: 1.25rem;
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: -0.015em;
+    /* Soft blur panel for premium aesthetic over 3D rendering */
+    background: var(--ipad-panel-bg);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 1.8rem 2.5rem;
+    box-shadow: 0 10px 40px rgb(255, 255, 255);
+}
+
+.gradient-text {
+    background: radial-gradient(circle at 50% 50%, #ffffff 0%, #86868b 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: -0.04em;
+    padding-bottom: 0.5rem;
+}
+
+/* 6. BUTTON DESIGN */
+.hero-buttons {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+.btn-apple {
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.btn-apple-primary {
+    background-color: var(--ipad-text);
+    color: var(--ipad-bg);
+    padding: 0.85rem 2rem;
+    border: 1px solid transparent;
+}
+
+.btn-apple-primary:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.15);
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.btn-apple-link {
+    background-color: transparent;
+    color: var(--ipad-link);
+    padding: 0.85rem 0;
+    border: none;
+    font-size: 1.15rem;
+}
+
+.btn-apple-link:hover {
+    color: #4b9cff;
+}
+
+.btn-apple-link i {
+    font-size: 0.9rem;
+    margin-left: 0.4rem;
+    transition: transform 0.3s;
+}
+
+.btn-apple-link:hover i {
+    transform: translateY(3px);
+}
+
+/* 7. CINEMATIC GRADIENT LAYERS */
+#section-final::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: -50%;
+    pointer-events: none;
+    background: radial-gradient(ellipse at 50% 100%, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
+    z-index: -1;
+}
+
+.feature-text {
+    z-index: 2;
+    /* Float above WebGL */
+    max-width: 500px;
+}
+
+/* 8. ALTERNATING ANIMATION PREPARATION (GSAP READY) */
+.gsap-reveal {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Directional defaults for staggered reveals */
+.from-left {
+    transform: translateX(-60px) translateY(10px);
+}
+
+.from-right {
+    transform: translateX(60px) translateY(10px);
+}
+
+.from-bottom {
+    transform: translateY(50px);
+}
+
+/* 9. HEADER / HERO STAGGERING PREFS */
+.hero-title,
+.hero-buttons {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.hero-subtitle {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+}
+
+/* Mobile Responsiveness tweaks */
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        background: rgba(0, 0, 0, 0.9);
+        padding: 1rem;
+        border-radius: 10px;
+        margin-top: 0.5rem;
+    }
+}
+
+/* 10. RESPONSIVE STRUCTURE */
+@media (max-width: 768px) {
+    .apple-nav {
+        padding: 0.25rem 0;
+    }
+
+    .scroll-section {
+        min-height: 120vh;
+        align-items: flex-end;
+        /* Push text to bottom on mobile so model is visible */
+        padding-bottom: 10vh;
+    }
+
+    #section-hero {
+        align-items: flex-start;
+        padding-top: 15vh;
+    }
+
+    .feature-text {
+        text-align: center;
+        max-width: 100%;
+        margin-top: 50vh;
+        /* clear the 3D model footprint */
+    }
+
+    .text-md-end,
+    .text-md-start {
+        text-align: center !important;
+    }
+
+    .from-left,
+    .from-right {
+        /* On narrow mobile, default everything to bottom origin to avoid horizontal scrollbar breaks */
+        transform: translateY(40px);
+    }
+
+    .lead {
+        font-size: 1.1rem;
+        padding: 1.4rem;
+    }
+}
