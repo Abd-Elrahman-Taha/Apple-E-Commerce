@@ -1,18 +1,7 @@
 import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   base: '/',
-  build: {
-    rollupOptions: {
-      input: {
-        main: 'index.html',
-        mac: 'mac.html',
-        ipad: 'ipad.html',
-        iphone: 'iphone.html',
-        watch: 'watch.html',
-        airpods: 'airpods.html',
-        store: 'store.html'
-      }
-    }
-  }
+  plugins: [react()],
 })

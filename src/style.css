@@ -115,35 +115,40 @@ section {
     color: var(--apple-text);
     margin-bottom: 0.5rem;
     letter-spacing: -0.04em;
-    visibility: hidden;
-    /* For GSAP */
+    opacity: 0;
+    transform: translateY(30px);
 }
 
 .hero-subtitle {
     font-size: clamp(1.2rem, 3vw, 2rem);
     font-weight: 400;
-    color: var(--apple-white);
+    color: transparent;
+    background: linear-gradient(90deg, #ffffff, #a1a1a6);
+    -webkit-background-clip: text;
+    background-clip: text;
     line-height: 1.4;
-    box-shadow: 0 0 20px rgb(255, 255, 255);
-    border-radius: 20px;
-    padding: 10px 20px;
-
-    visibility: hidden;
-    /* For GSAP */
+    letter-spacing: -0.02em;
+    margin-bottom: 2rem;
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
 }
 
 /* Buttons */
+.hero-buttons {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
 .btn-apple-primary {
     background-color: var(--apple-text);
     color: var(--apple-bg);
-    border-radius: 20px;
-    padding: 10px 24px;
+    border-radius: 30px;
+    padding: 12px 30px;
     font-weight: 600;
     font-size: 1rem;
     border: none;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    visibility: hidden;
-    /* For GSAP */
+    text-decoration: none;
 }
 
 .btn-apple-primary:hover {
@@ -154,23 +159,20 @@ section {
 }
 
 .btn-apple-link {
-    background-color: var(--apple-text);
-    color: var(--apple-bg);
-    border-radius: 20px;
-    padding: 10px 24px;
+    background-color: transparent;
+    color: var(--apple-text);
+    border-radius: 30px;
+    padding: 12px 30px;
     font-weight: 600;
     font-size: 1rem;
     border: none;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    visibility: hidden;
-    /* For GSAP */
-    /* For GSAP */
+    text-decoration: none;
 }
 
 .btn-apple-link:hover {
     transform: scale(1.05);
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
-    color: var(--apple-bg);
+    color: #a1a1a6;
 }
 
 /* Details Section */

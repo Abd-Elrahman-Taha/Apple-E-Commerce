@@ -1,39 +1,40 @@
+/* ---------------------------------------------------------
+   STORE PAGE CSS: APPLE LIGHT DESIGN SYSTEM
+   All styles scoped via body.light-theme to prevent leaking
+--------------------------------------------------------- */
 :root {
     --apple-bg-light: #f5f5f7;
     --apple-card-bg: #ffffff;
     --apple-text-dark: #1d1d1f;
-    --apple-muted: #86868b;
-    --apple-link: #0066cc;
+    --apple-muted-store: #86868b;
+    --apple-link-store: #0066cc;
     --apple-nav-bg-light: rgba(255, 255, 255, 0.8);
     --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     --card-shadow-hover: 0 16px 32px rgba(0, 0, 0, 0.12);
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-body {
-    background: var(--apple-bg-light);
-    color: var(--apple-text-dark);
+/* =========================================================
+   SCOPED BODY STYLES — Only active when Store is mounted
+   ========================================================= */
+body.light-theme {
+    background: var(--apple-bg-light) !important;
+    color: var(--apple-text-dark) !important;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Typography Hierarchy */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+body.light-theme h1,
+body.light-theme h2,
+body.light-theme h3,
+body.light-theme h4,
+body.light-theme h5,
+body.light-theme h6 {
     letter-spacing: -0.015em;
 }
 
-/* Light Navbar */
+/* =========================================================
+   LIGHT NAVBAR (Desktop)
+   ========================================================= */
 .apple-nav-light {
     background: var(--apple-nav-bg-light) !important;
     backdrop-filter: blur(20px);
@@ -56,28 +57,66 @@ h6 {
     opacity: 1;
 }
 
-.nav-icon {
-    font-size: 1.2rem;
+/* Apple logo + search/bag icons = BLACK on Store */
+.apple-nav-light .nav-icon,
+.apple-nav-light .navbar-brand.nav-icon {
     color: var(--apple-text-dark) !important;
-    opacity: 0.8;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    opacity: 0.9;
 }
 
-.nav-icon:hover {
+.apple-nav-light .nav-icon:hover {
     opacity: 1;
     transform: scale(1.1);
 }
 
-/* Sections */
-main {
-    position: relative;
-    z-index: 10;
-    padding-top: 100px;
+/* Toggler icon — force dark lines for light navbar */
+.apple-nav-light .navbar-toggler {
+    border-color: rgba(0, 0, 0, 0.15);
 }
 
-/* Header */
+.apple-nav-light .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%280, 0, 0, 0.7%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* =========================================================
+   MOBILE NAVBAR DROPDOWN (Store page only)
+   ========================================================= */
+@media (max-width: 991.98px) {
+    .apple-nav-light .navbar-collapse {
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        padding: 1rem;
+        border-radius: 12px;
+        margin-top: 0.5rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    }
+
+    .apple-nav-light .navbar-collapse .nav-link {
+        color: var(--apple-text-dark) !important;
+        opacity: 0.85;
+        padding: 0.6rem 1rem !important;
+    }
+
+    .apple-nav-light .navbar-collapse .nav-link:hover {
+        opacity: 1;
+    }
+}
+
+/* =========================================================
+   STORE MAIN WRAPPER — offset for fixed navbar
+   ========================================================= */
+body.light-theme main#smooth-wrapper {
+    position: relative;
+    z-index: 10;
+    padding-top: 80px;
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
 .store-header {
-    padding: 60px 0 40px 0;
+    padding: 40px 0 30px 0;
 }
 
 .store-title {
@@ -90,11 +129,13 @@ main {
 .store-subtitle {
     font-size: clamp(1.2rem, 3vw, 2.2rem);
     font-weight: 500;
-    color: var(--apple-muted);
+    color: var(--apple-muted-store);
     line-height: 1.2;
 }
 
-/* Search Box */
+/* =========================================================
+   SEARCH BOX
+   ========================================================= */
 .search-container {
     position: relative;
     width: 100%;
@@ -106,7 +147,7 @@ main {
     left: 20px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--apple-muted);
+    color: var(--apple-muted-store);
     font-size: 1.2rem;
 }
 
@@ -134,13 +175,17 @@ main {
     font-weight: 400;
 }
 
-/* Initial hidden state for GSAP */
+/* =========================================================
+   GSAP INITIAL HIDDEN STATE
+   ========================================================= */
 .reveal-elem {
     opacity: 0;
     visibility: hidden;
 }
 
-/* CSS Grid Layout */
+/* =========================================================
+   PRODUCT GRID
+   ========================================================= */
 .product-section {
     padding: 40px 0 100px 0;
 }
@@ -174,7 +219,9 @@ main {
     }
 }
 
-/* Product Card - The Core UI */
+/* =========================================================
+   PRODUCT CARD
+   ========================================================= */
 .product-card {
     background: var(--apple-card-bg);
     border-radius: 20px;
@@ -248,7 +295,7 @@ main {
 
 .product-desc {
     font-size: 0.95rem;
-    color: var(--apple-muted);
+    color: var(--apple-muted-store);
     line-height: 1.4;
     margin-bottom: 15px;
     flex-grow: 1;
@@ -266,7 +313,7 @@ main {
 }
 
 .rating-num {
-    color: var(--apple-muted);
+    color: var(--apple-muted-store);
     font-weight: 500;
     margin-left: 5px;
 }
@@ -297,7 +344,7 @@ main {
 }
 
 .btn-buy:hover {
-    background-color: var(--apple-link);
+    background-color: var(--apple-link-store);
     /* Apple blue on hover */
     transform: scale(1.05);
 }
