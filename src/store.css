@@ -516,7 +516,8 @@ body.light-theme main#smooth-wrapper {
 }
 
 .btn-buy:hover {
-    background-color: var(--apple-link-store);
+    background-color: var(--apple-bg-light);
+    color: var(--apple-text-dark)  ;
     transform: scale(1.05);
 }
 
