@@ -11,10 +11,11 @@
     --apple-nav-bg-light: rgba(255, 255, 255, 0.8);
     --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     --card-shadow-hover: 0 16px 32px rgba(0, 0, 0, 0.12);
+    --apple-border: rgba(0, 0, 0, 0.08);
 }
 
 /* =========================================================
-   SCOPED BODY STYLES — Only active when Store is mounted
+   SCOPED BODY STYLES
    ========================================================= */
 body.light-theme {
     background: var(--apple-bg-light) !important;
@@ -23,23 +24,26 @@ body.light-theme {
     -moz-osx-font-smoothing: grayscale;
 }
 
-body.light-theme h1,
-body.light-theme h2,
-body.light-theme h3,
-body.light-theme h4,
-body.light-theme h5,
-body.light-theme h6 {
+body.light-theme h1, body.light-theme h2, body.light-theme h3, 
+body.light-theme h4, body.light-theme h5, body.light-theme h6 {
     letter-spacing: -0.015em;
 }
 
+body.light-theme main#smooth-wrapper {
+    position: relative;
+    z-index: 10;
+    padding-top: 80px;
+    min-height: 100vh;
+}
+
 /* =========================================================
-   LIGHT NAVBAR (Desktop)
+   LIGHT NAVBAR (Desktop) - existing styles
    ========================================================= */
 .apple-nav-light {
     background: var(--apple-nav-bg-light) !important;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid var(--apple-border);
     font-size: 0.85rem;
     font-weight: 500;
     transition: all 0.3s ease;
@@ -52,14 +56,11 @@ body.light-theme h6 {
     transition: opacity 0.3s ease;
 }
 
-.apple-nav-light .nav-link:hover,
-.apple-nav-light .nav-link.fw-bold {
+.apple-nav-light .nav-link:hover, .apple-nav-light .nav-link.fw-bold {
     opacity: 1;
 }
 
-/* Apple logo + search/bag icons = BLACK on Store */
-.apple-nav-light .nav-icon,
-.apple-nav-light .navbar-brand.nav-icon {
+.apple-nav-light .nav-icon, .apple-nav-light .navbar-brand.nav-icon {
     color: var(--apple-text-dark) !important;
     opacity: 0.9;
 }
@@ -69,7 +70,7 @@ body.light-theme h6 {
     transform: scale(1.1);
 }
 
-/* Toggler icon — force dark lines for light navbar */
+/* Toggler icon */
 .apple-nav-light .navbar-toggler {
     border-color: rgba(0, 0, 0, 0.15);
 }
@@ -78,45 +79,23 @@ body.light-theme h6 {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%280, 0, 0, 0.7%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
 }
 
-/* =========================================================
-   MOBILE NAVBAR DROPDOWN (Store page only)
-   ========================================================= */
 @media (max-width: 991.98px) {
     .apple-nav-light .navbar-collapse {
         background: rgba(255, 255, 255, 0.96);
         backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
         padding: 1rem;
         border-radius: 12px;
         margin-top: 0.5rem;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
     }
-
-    .apple-nav-light .navbar-collapse .nav-link {
-        color: var(--apple-text-dark) !important;
-        opacity: 0.85;
-        padding: 0.6rem 1rem !important;
-    }
-
-    .apple-nav-light .navbar-collapse .nav-link:hover {
-        opacity: 1;
-    }
 }
 
 /* =========================================================
-   STORE MAIN WRAPPER — offset for fixed navbar
-   ========================================================= */
-body.light-theme main#smooth-wrapper {
-    position: relative;
-    z-index: 10;
-    padding-top: 80px;
-}
-
-/* =========================================================
-   HEADER
+   HEADER & SEARCH
    ========================================================= */
 .store-header {
-    padding: 40px 0 30px 0;
+    padding: 32px 0 16px 0;
+    margin-bottom: -450px;
 }
 
 .store-title {
@@ -133,13 +112,10 @@ body.light-theme main#smooth-wrapper {
     line-height: 1.2;
 }
 
-/* =========================================================
-   SEARCH BOX
-   ========================================================= */
 .search-container {
     position: relative;
     width: 100%;
-    margin-top: 30px;
+    margin-top: 16px;
 }
 
 .search-icon {
@@ -148,16 +124,16 @@ body.light-theme main#smooth-wrapper {
     top: 50%;
     transform: translateY(-50%);
     color: var(--apple-muted-store);
-    font-size: 1.2rem;
+    font-size: 1.1rem;
 }
 
 #productSearch {
     width: 100%;
-    height: 60px;
-    border-radius: 30px;
-    border: none;
+    height: 56px;
+    border-radius: 28px;
+    border: 1px solid var(--apple-border);
     padding: 0 20px 0 50px;
-    font-size: 1.1rem;
+    font-size: 1rem;
     background-color: var(--apple-card-bg);
     box-shadow: var(--card-shadow);
     color: var(--apple-text-dark);
@@ -167,7 +143,7 @@ body.light-theme main#smooth-wrapper {
 #productSearch:focus {
     outline: none;
     box-shadow: var(--card-shadow-hover);
-    transform: scale(1.02);
+    border-color: rgba(0, 0, 0, 0.15);
 }
 
 #productSearch::placeholder {
@@ -176,47 +152,229 @@ body.light-theme main#smooth-wrapper {
 }
 
 /* =========================================================
-   GSAP INITIAL HIDDEN STATE
+   CATEGORY BAR
    ========================================================= */
-.reveal-elem {
-    opacity: 0;
-    visibility: hidden;
+.store-category-section {
+    padding: 8px 0 16px 0;
+    
+    position: absolute;
+    margin-left: 25px;
+    margin-bottom: 10px;
+    width: calc(100% - 50px);
+    z-index: 100;
+    
+    
+    
+}
+
+.category-scroll-container {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.category-scroll-container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+}
+
+.category-btn {
+    padding: 10px 24px;
+    border-radius: 24px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--apple-text-dark);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.category-btn:hover {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.category-btn.active {
+    background: var(--apple-text-dark);
+    color: #fff;
 }
 
 /* =========================================================
-   PRODUCT GRID
+   MAIN LAYOUT (SIDEBAR + GRID)
    ========================================================= */
-.product-section {
-    padding: 40px 0 100px 0;
+.store-main-layout {
+    z-index: 10000;
+    padding-bottom: 100px;
+    margin-top: 50px;
 }
 
+.store-grid-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 32px;
+    align-items: start;
+}
+
+/* When category is 'All', full width grid */
+.store-grid-layout:has(.store-sidebar-col.d-none) {
+    display: block;
+}
+
+/* =========================================================
+   FILTER PANEL
+   ========================================================= */
+.store-filter-panel {
+    background: transparent;
+}
+
+.filter-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.filter-panel-header h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.btn-clear-filters {
+    background: none;
+    border: none;
+    color: var(--apple-link-store);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0;
+}
+
+.btn-clear-filters:hover {
+    text-decoration: underline;
+}
+
+.filter-group {
+    border-top: 1px solid var(--apple-border);
+    padding: 16px 0;
+}
+
+.filter-group-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--apple-text-dark);
+}
+
+.filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Custom Checkbox */
+.filter-checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: var(--apple-text-dark);
+}
+
+.filter-checkbox-label input {
+    display: none;
+}
+
+.checkbox-custom {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #d2d2d7;
+    border-radius: 4px;
+    margin-right: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    background: #fff;
+}
+
+.filter-checkbox-label input:checked + .checkbox-custom {
+    background: var(--apple-link-store);
+    border-color: var(--apple-link-store);
+}
+
+.filter-checkbox-label input:checked + .checkbox-custom::after {
+    content: '';
+    width: 4px;
+    height: 9px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    margin-bottom: 2px;
+}
+
+.checkbox-text {
+    opacity: 0.9;
+}
+
+.filter-checkbox-label:hover .checkbox-text {
+    opacity: 1;
+}
+
+/* Empty State Filters */
+.filter-empty-state {
+    padding: 20px;
+    background: rgba(0,0,0,0.03);
+    border-radius: 12px;
+    color: var(--apple-muted-store);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* =========================================================
+   PRODUCTS GRID
+   ========================================================= */
 .product-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
+    gap: 24px;
 }
 
-@media (min-width: 1400px) {
-    .product-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
+/* Adjust grid based on sidebar presence */
+.store-products-col:not(.full-width) .product-grid {
+    grid-template-columns: repeat(3, 1fr);
 }
 
-@media (max-width: 991px) {
-    .product-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+.store-products-col.full-width .product-grid {
+    grid-template-columns: repeat(4, 1fr);
 }
 
-@media (max-width: 576px) {
-    .product-grid {
-        grid-template-columns: 1fr;
-    }
+/* No Results */
+.no-results-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--apple-card-bg);
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
+}
 
-    .header-text-col,
-    .search-col {
-        text-align: center;
-    }
+.no-results-icon {
+    font-size: 3rem;
+    color: var(--apple-muted-store);
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.no-results-state h3 {
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.no-results-state p {
+    color: var(--apple-muted-store);
 }
 
 /* =========================================================
@@ -225,21 +383,20 @@ body.light-theme main#smooth-wrapper {
 .product-card {
     background: var(--apple-card-bg);
     border-radius: 20px;
-    padding: 30px;
+    padding: 24px;
     display: flex;
     flex-direction: column;
     box-shadow: var(--card-shadow);
     transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
     position: relative;
     will-change: transform, box-shadow;
-    /* Optimize for GSAP hover tilts */
     cursor: pointer;
     overflow: hidden;
+    height: 100%;
 }
 
 .product-card:hover {
-    /* Fallback hover just in case JS tilt fails */
-    transform: translateY(-10px) scale(1.02);
+    transform: translateY(-8px) scale(1.02);
     box-shadow: var(--card-shadow-hover);
 }
 
@@ -247,24 +404,24 @@ body.light-theme main#smooth-wrapper {
     position: absolute;
     top: 20px;
     left: 20px;
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: rgba(0, 0, 0, 0.06);
     color: var(--apple-text-dark);
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 600;
-    padding: 5px 12px;
+    padding: 5px 10px;
     border-radius: 20px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    z-index: 2;
 }
 
 .card-image-wrap {
     width: 100%;
-    height: 220px;
+    height: 180px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 15px;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
 .card-image-wrap img {
@@ -276,10 +433,8 @@ body.light-theme main#smooth-wrapper {
 
 .product-card:hover .card-image-wrap img {
     transform: scale(1.08);
-    /* Internal image scale on hover */
 }
 
-/* Info */
 .card-info {
     display: flex;
     flex-direction: column;
@@ -287,29 +442,45 @@ body.light-theme main#smooth-wrapper {
 }
 
 .product-name {
-    font-size: 1.4rem;
+    font-size: 1.25rem;
     font-weight: 600;
     color: var(--apple-text-dark);
-    margin-bottom: 5px;
+    margin-bottom: 6px;
+    letter-spacing: -0.02em;
 }
 
 .product-desc {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: var(--apple-muted-store);
     line-height: 1.4;
-    margin-bottom: 15px;
-    flex-grow: 1;
+    margin-bottom: 12px;
 }
 
-/* Rating */
+/* Dynamic specs */
+.product-specs-mini {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.product-specs-mini span {
+    font-size: 0.75rem;
+    background: rgba(0, 0, 0, 0.04);
+    padding: 4px 8px;
+    border-radius: 6px;
+    color: var(--apple-text-dark);
+    font-weight: 500;
+}
+
 .product-rating {
     margin-bottom: 15px;
+    margin-top: auto;
     color: #f5c518;
-    /* Gold star color */
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
 }
 
 .rating-num {
@@ -318,18 +489,19 @@ body.light-theme main#smooth-wrapper {
     margin-left: 5px;
 }
 
-/* Footer of card */
 .card-bottom {
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
-    margin-top: auto;
+    align-items: center;
+    margin-top: 10px;
+    padding-top: 15px;
+    border-top: 1px solid var(--apple-border);
 }
 
 .product-price {
-    font-size: 1.4rem;
-    font-weight: 500;
-    letter-spacing: -0.03em;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
 }
 
 .btn-buy {
@@ -337,14 +509,156 @@ body.light-theme main#smooth-wrapper {
     color: white;
     border: none;
     border-radius: 20px;
-    padding: 8px 18px;
-    font-size: 0.9rem;
+    padding: 8px 16px;
+    font-size: 0.85rem;
     font-weight: 600;
     transition: transform 0.2s ease, background 0.2s ease;
 }
 
 .btn-buy:hover {
     background-color: var(--apple-link-store);
-    /* Apple blue on hover */
     transform: scale(1.05);
+}
+
+/* =========================================================
+   MOBILE RESPONSIVENESS
+   ========================================================= */
+.mobile-filter-toggle {
+    margin-bottom: 20px;
+}
+
+.btn-open-filters {
+    width: 100%;
+    padding: 12px;
+    background: var(--apple-card-bg);
+    border: 1px solid var(--apple-border);
+    border-radius: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: var(--card-shadow);
+}
+
+.filter-badge {
+    background: var(--apple-link-store);
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 10px;
+}
+
+.mobile-filter-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 1040;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.mobile-filter-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+@media (max-width: 1399px) {
+    .store-products-col.full-width .product-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 1199px) {
+    .store-products-col:not(.full-width) .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 991px) {
+    .store-grid-layout {
+        display: block;
+    }
+
+    .store-products-col.full-width .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .store-products-col:not(.full-width) .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Mobile drawer for filter panel */
+    .store-sidebar-col {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 85vh;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        z-index: 1050;
+        transform: translateY(100%);
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        border-radius: 24px 24px 0 0;
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .store-filter-panel {
+        height: 100%;
+        overflow-y: auto;
+        padding: 30px;
+    }
+
+    .store-filter-panel.open {
+        /* Class attached directly to the inner panel or handled via wrapper, 
+           we handle it with React logic above, but if we need CSS toggle: */
+    }
+
+    /* Using React state to toggle a class on the wrapper if needed, 
+       but we passed isOpen to FilterPanel. Let's ensure it slides up. */
+    .store-sidebar-col:has(.store-filter-panel.open) {
+        transform: translateY(0);
+    }
+
+    .filter-header-mobile {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--apple-border);
+    }
+
+    .filter-header-mobile h3 {
+        margin: 0;
+        font-weight: 700;
+    }
+
+    .btn-close-filter {
+        background: #f1f1f2;
+        border: none;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--apple-text-dark);
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .product-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .header-text-col,
+    .search-col {
+        text-align: center;
+    }
 }

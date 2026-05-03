@@ -24,12 +24,21 @@ const Navbar = () => {
                         <li className="nav-item"><Link className="nav-link" to="/iphone">iPhone</Link></li>
                         <li className="nav-item"><Link className="nav-link" to="/watch">Watch</Link></li>
                         <li className="nav-item"><Link className="nav-link" to="/airpods">AirPods</Link></li>
+                        
+                        {/* Mobile-only nav items */}
+                        <li className="nav-item d-lg-none"><Link className="nav-link" to="/bag">Bag</Link></li>
+                        <li className="nav-item d-lg-none"><Link className="nav-link" to="/login">Login</Link></li>
                     </ul>
                 </div>
 
                 <div className="d-none d-lg-flex align-items-center gap-4">
-                    <a href="#" className="nav-icon"><i className="bi bi-search"></i></a>
-                    <a href="#" className="nav-icon"><i className="bi bi-bag"></i></a>
+                  
+                    <Link className="nav-icon" to="/bag">
+                        <i className="fa-solid fa-bag-shopping"></i>
+                    </Link>
+                    <Link className="nav-icon" to="/login">
+                        <i className="fa-solid fa-circle-user"></i>
+                    </Link>
                 </div>
             </div>
         </nav>

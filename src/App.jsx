@@ -11,6 +11,7 @@ import Ipad from './pages/Ipad';
 import Iphone from './pages/Iphone';
 import Watch from './pages/Watch';
 import Airpods from './pages/Airpods';
+import Login from './pages/Login';
 
 import './style.css'; // Global styles
 
@@ -47,6 +48,7 @@ const App = () => {
         <Route path="/iphone" element={<Iphone />} />
         <Route path="/watch" element={<Watch />} />
         <Route path="/airpods" element={<Airpods />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </>
   );
