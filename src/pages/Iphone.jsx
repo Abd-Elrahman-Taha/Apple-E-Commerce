@@ -16,9 +16,9 @@ const Iphone = () => {
 
         document.body.id = "body-bg";
 
-        // ---------------------------------------------------------
-        // 1. Scene Setup & Camera 
-        // ---------------------------------------------------------
+        
+        
+        
         const scene = new THREE.Scene();
 
         const cameraGroup = new THREE.Group();
@@ -52,9 +52,9 @@ const Iphone = () => {
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-        // ---------------------------------------------------------
-        // 2. Safe Disassembly Engine & Loading
-        // ---------------------------------------------------------
+        
+        
+        
         const loader = new GLTFLoader();
 
         let mixer = null;
@@ -143,9 +143,9 @@ const Iphone = () => {
         };
         window.addEventListener('resize', onResize);
 
-        // ---------------------------------------------------------
-        // 3. Narrative Cinematic Timelines
-        // ---------------------------------------------------------
+        
+        
+        
         function initScrollAnimations(isMobile) {
 
             const tlIntro = gsap.timeline();
@@ -210,7 +210,7 @@ const Iphone = () => {
             masterTl.to(document.body, { backgroundColor: '#0a0a0c', ease: 'none', duration: 4 }, 0);
 
             gsap.utils.toArray('.reveal-text').forEach((element) => {
-                gsap.set(element, { opacity: 0, y: 30 }); // Need to set initial state first
+                gsap.set(element, { opacity: 0, y: 30 }); 
                 gsap.to(element, {
                     scrollTrigger: { trigger: element, start: "top 85%", end: "bottom center", toggleActions: "play none none reverse" },
                     opacity: 1, y: 0, duration: 1.2, ease: 'power3.out'
@@ -222,9 +222,9 @@ const Iphone = () => {
             }, 100);
         }
 
-        // ---------------------------------------------------------
-        // 4. Render Loop
-        // ---------------------------------------------------------
+        
+        
+        
         const clock = new THREE.Clock();
 
         const animate = () => {
@@ -240,7 +240,7 @@ const Iphone = () => {
 
         animate();
 
-        // Cleanup
+        
         return () => {
             window.removeEventListener('resize', onResize);
             cancelAnimationFrame(reqId);
@@ -282,7 +282,7 @@ const Iphone = () => {
             </div>
 
             <main id="smooth-wrapper">
-                {/* 1. HERO SECTION */}
+                {}
                 <section id="section-hero" className="scroll-section d-flex align-items-center">
                     <div className="container px-4 px-md-5">
                         <div className="hero-text text-center mx-auto w-100 mt-5">
@@ -298,7 +298,7 @@ const Iphone = () => {
                     </div>
                 </section>
 
-                {/* 2. DISASSEMBLY SECTION */}
+                {}
                 <section id="section-disassembly" className="scroll-section d-flex align-items-center">
                     <div className="container px-4 px-md-5">
                         <div className="row w-100">
@@ -313,7 +313,7 @@ const Iphone = () => {
                     </div>
                 </section>
 
-                {/* 3. EXPLORATION SECTION */}
+                {}
                 <section id="section-exploration" className="scroll-section d-flex align-items-center">
                     <div className="container px-4 px-md-5">
                         <div className="row w-100">
@@ -327,7 +327,7 @@ const Iphone = () => {
                     </div>
                 </section>
 
-                {/* 4. REASSEMBLY SECTION */}
+                {}
                 <section id="section-reassembly" className="scroll-section d-flex align-items-center">
                     <div className="container px-4 px-md-5">
                         <div className="row w-100">
@@ -342,7 +342,7 @@ const Iphone = () => {
                     </div>
                 </section>
 
-                {/* 5. FINAL HERO STATE */}
+                {}
                 <section id="section-final" className="scroll-section d-flex align-items-center justify-content-center text-center">
                     <div className="container px-4 px-md-5">
                         <h2 className="display-2 fw-bold mb-4 reveal-text gradient-text">Pro beyond limits.</h2>

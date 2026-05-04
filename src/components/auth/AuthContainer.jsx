@@ -13,11 +13,11 @@ const AuthContainer = () => {
     const glassRef = useRef(null);
     const isAnimating = useRef(false);
 
-    /* ─── Intro animation on mount ─── */
+    
     useEffect(() => {
         const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
-        // Glass container fades in + scales up
+        
         tl.fromTo(
             glassRef.current,
             { opacity: 0, scale: 0.95, y: 20 },
@@ -26,7 +26,7 @@ const AuthContainer = () => {
 
         const isMobile = window.innerWidth <= 768;
 
-        // Login form appears
+        
         tl.fromTo(
             loginRef.current,
             { opacity: 0, scale: isMobile ? 1 : 0.95, y: isMobile ? 20 : 0 },
@@ -34,7 +34,7 @@ const AuthContainer = () => {
             '-=0.6'
         );
 
-        // 3D model wrapper fades in
+        
         tl.fromTo(
             modelWrapperRef.current,
             { opacity: 0 },
@@ -45,7 +45,7 @@ const AuthContainer = () => {
         return () => tl.kill();
     }, []);
 
-    /* ─── Switch between Login ↔ Signup ─── */
+    
     const switchToSignup = useCallback(() => {
         if (isAnimating.current) return;
         isAnimating.current = true;
@@ -59,7 +59,7 @@ const AuthContainer = () => {
             },
         });
 
-        // Login form transitions out
+        
         tl.to(loginRef.current, {
             opacity: 0,
             scale: isMobile ? 1 : 0.95,
@@ -67,10 +67,10 @@ const AuthContainer = () => {
             duration: 0.4,
         });
 
-        // Switch state
+        
         tl.call(() => setIsSignup(true));
 
-        // Signup form transitions in
+        
         tl.fromTo(
             signupRef.current,
             { opacity: 0, scale: isMobile ? 1 : 0.95, y: isMobile ? 20 : 0 },
@@ -91,7 +91,7 @@ const AuthContainer = () => {
             },
         });
 
-        // Signup form transitions out
+        
         tl.to(signupRef.current, {
             opacity: 0,
             scale: isMobile ? 1 : 0.95,
@@ -99,10 +99,10 @@ const AuthContainer = () => {
             duration: 0.4,
         });
 
-        // Switch state
+        
         tl.call(() => setIsSignup(false));
 
-        // Login form transitions in
+        
         tl.fromTo(
             loginRef.current,
             { opacity: 0, scale: isMobile ? 1 : 0.95, y: isMobile ? 20 : 0 },
@@ -112,7 +112,7 @@ const AuthContainer = () => {
 
     return (
         <section className="auth-section" ref={containerRef}>
-            {/* Animated background particles */}
+            {}
             <div className="auth-bg-gradient" />
             <div className="auth-bg-orbs">
                 <div className="auth-orb auth-orb-1" />
@@ -120,15 +120,15 @@ const AuthContainer = () => {
                 <div className="auth-orb auth-orb-3" />
             </div>
 
-            {/* 3D Model behind glass */}
+            {}
             <div className="auth-model-wrapper" ref={modelWrapperRef}>
                 <ModelScene />
             </div>
 
-            {/* Glassmorphism container */}
+            {}
             <div className="auth-glass" ref={glassRef}>
                 <div className="auth-glass-inner">
-                    {/* Forms area */}
+                    {}
                     <div className="auth-forms-wrapper">
                         {!isSignup ? (
                             <LoginForm ref={loginRef} onSwitch={switchToSignup} />

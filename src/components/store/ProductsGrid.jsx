@@ -1,5 +1,6 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
+import useStore from '../../store/useStore';
 
 const generateStarHTML = (rating) => {
     const fullStars = Math.floor(rating);
@@ -17,6 +18,21 @@ const generateStarHTML = (rating) => {
 
 export const ProductCard = ({ product }) => {
     const cardRef = useRef(null);
+    const { addToCart } = useStore();
+    const [added, setAdded] = useState(false);
+
+    const handleAddToCart = () => {
+        addToCart(product);
+        setAdded(true);
+        
+
+        if (cardRef.current) {
+            const btn = cardRef.current.querySelector('.btn-buy');
+            gsap.fromTo(btn, { scale: 0.9 }, { scale: 1, duration: 0.3, ease: "back.out(2)" });
+        }
+        
+        setTimeout(() => setAdded(false), 2000);
+    };
 
     const handleMouseMove = (e) => {
         const card = cardRef.current;
@@ -63,7 +79,7 @@ export const ProductCard = ({ product }) => {
                 <h3 className="product-name">{product.name}</h3>
                 <div className="product-desc">{product.desc}</div>
                 
-                {/* Dynamic specs if available */}
+                {}
                 <div className="product-specs-mini">
                     {product.storage && <span>{product.storage}</span>}
                     {product.chip && <span>{product.chip}</span>}
@@ -76,7 +92,16 @@ export const ProductCard = ({ product }) => {
                 </div>
                 <div className="card-bottom">
                     <div className="product-price">{product.price}</div>
-                    <button className="btn-buy">Add to Cart</button>
+                    <button 
+                        className="btn-buy" 
+                        onClick={handleAddToCart}
+                        style={{ 
+                            background: added ? '#34c759' : '', 
+                            transition: 'background 0.3s ease'
+                        }}
+                    >
+                        {added ? 'Added!' : 'Add to Cart'}
+                    </button>
                 </div>
             </div>
         </div>
@@ -86,7 +111,7 @@ export const ProductCard = ({ product }) => {
 const ProductsGrid = ({ products }) => {
     const gridRef = useRef(null);
 
-    // Simple GSAP fade-in when products change
+
     useEffect(() => {
         if (!gridRef.current) return;
         
@@ -97,7 +122,7 @@ const ProductsGrid = ({ products }) => {
                 { opacity: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.05, ease: "power2.out" }
             );
         }
-    }, [products]); // Re-run animation when products array reference changes
+    }, [products]);
 
     if (products.length === 0) {
         return (

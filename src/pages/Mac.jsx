@@ -14,12 +14,12 @@ const Mac = () => {
     useEffect(() => {
         let reqId;
 
-        // Change body id for styling
+        
         document.body.id = "body-bg";
 
-        // ---------------------------------------------------------
-        // 1. SCENE & CAMERA SETUP
-        // ---------------------------------------------------------
+        
+        
+        
         const scene = new THREE.Scene();
 
         const cameraGroup = new THREE.Group();
@@ -29,7 +29,7 @@ const Mac = () => {
         cameraGroup.add(camera);
         scene.add(cameraGroup);
 
-        // Premium Apple-Style Studio Lighting
+        
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
         scene.add(ambientLight);
 
@@ -37,7 +37,7 @@ const Mac = () => {
         keyLight.position.set(5, 10, 8);
         scene.add(keyLight);
 
-        const rimLight = new THREE.DirectionalLight(0xa0c4ff, 3.0); // Cool premium edge glow
+        const rimLight = new THREE.DirectionalLight(0xa0c4ff, 3.0); 
         rimLight.position.set(-8, 5, -10);
         scene.add(rimLight);
 
@@ -45,7 +45,7 @@ const Mac = () => {
         fillLight.position.set(0, -5, 5);
         scene.add(fillLight);
 
-        // Screen glow point light
+        
         const screenGlow = new THREE.PointLight(0xffffff, 0, 15);
         screenGlow.position.set(0, 2, 2);
 
@@ -58,9 +58,9 @@ const Mac = () => {
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-        // ---------------------------------------------------------
-        // 2. MACBOOK LOADER & HINGE ALGORITHM
-        // ---------------------------------------------------------
+        
+        
+        
         const loader = new GLTFLoader();
 
         let model = null;
@@ -71,7 +71,7 @@ const Mac = () => {
 
         let lidPivot = new THREE.Group();
         let closedAngle = 0;
-        let openAngle = -Math.PI * 0.6; // ~108 degrees open
+        let openAngle = -Math.PI * 0.6; 
 
         function loadModel(path) {
             loader.load(
@@ -79,7 +79,7 @@ const Mac = () => {
                 (gltf) => {
                     model = gltf.scene;
 
-                    // Geometry Centering & Sizing
+                    
                     const box = new THREE.Box3().setFromObject(model);
                     const center = new THREE.Vector3();
                     if (!box.isEmpty()) {
@@ -93,7 +93,7 @@ const Mac = () => {
                         }
                     }
 
-                    // Prevent Three.js view-frustum culling bugs
+                    
                     model.traverse((node) => {
                         if (node.isMesh) {
                             node.frustumCulled = false;
@@ -103,7 +103,7 @@ const Mac = () => {
                     modelRotationGroup.add(model);
                     modelRotationGroup.updateMatrixWorld(true);
 
-                    // SAFE GEOMETRY LOGIC FOR LID DETECT
+                    
                     let mainGroups = [];
                     model.traverse((child) => {
                         if (child.isGroup && child.children && child.children.length >= 2) {
@@ -137,7 +137,7 @@ const Mac = () => {
                         });
                     }
 
-                    // BUILD THE PROPER HINGE PIVOT SYSTEM
+                    
                     if (baseNode && lidNode) {
                         const baseBox = new THREE.Box3().setFromObject(baseNode);
                         const lidBox = new THREE.Box3().setFromObject(lidNode);
@@ -195,9 +195,9 @@ const Mac = () => {
         };
         window.addEventListener('resize', onResize);
 
-        // ---------------------------------------------------------
-        // 3. GSAP SCROLL STORYTELLING
-        // ---------------------------------------------------------
+        
+        
+        
         function initScrollAnimations(isMobile) {
 
             const tlIntro = gsap.timeline();
@@ -234,7 +234,7 @@ const Mac = () => {
                 .to(modelRotationGroup.rotation, { x: 0.08, y: Math.PI / 2.2, z: 0.05, ease: 'power2.inOut', duration: 3 }, "sceneDesign")
                 .to(camera.position, { x: 0, z: 14, y: 1.5, ease: 'power2.inOut', duration: 3 }, "sceneDesign");
 
-            masterTl.addLabel("sceneDisplayFinal") // renamed to avoid duplicate label
+            masterTl.addLabel("sceneDisplayFinal") 
                 .to(modelRotationGroup.rotation, { x: 0.02, y: -Math.PI / 6, z: 0.02, ease: 'power2.inOut', duration: 3 }, "sceneDisplayFinal")
                 .to(camera.position, { x: 0, z: 20, y: 1, ease: 'power2.inOut', duration: 3 }, "sceneDisplayFinal")
                 .to(keyLight.position, { x: -5, y: 8, z: 5, ease: 'power2.inOut', duration: 3 }, "sceneDisplayFinal");
@@ -274,9 +274,9 @@ const Mac = () => {
             }, 100);
         }
 
-        // ---------------------------------------------------------
-        // 4. CONTINUOUS LOOP
-        // ---------------------------------------------------------
+        
+        
+        
         const clock = new THREE.Clock();
 
         const animate = () => {
@@ -292,7 +292,7 @@ const Mac = () => {
 
         animate();
 
-        // Cleanup
+        
         return () => {
             window.removeEventListener('resize', onResize);
             cancelAnimationFrame(reqId);
@@ -334,7 +334,7 @@ const Mac = () => {
             </div>
 
             <main id="smooth-wrapper">
-                {/* 1. HERO (Center) */}
+                {}
                 <section id="section-hero" className="hero-section scroll-section">
                     <div className="container px-4 px-md-5">
                         <div className="hero-text">
@@ -348,7 +348,7 @@ const Mac = () => {
                     </div>
                 </section>
 
-                {/* 2. PERFORMANCE (LEFT) */}
+                {}
                 <section id="section-performance" className="scroll-section">
                     <div className="container px-4 px-md-5">
                         <div className="row w-100">
@@ -362,7 +362,7 @@ const Mac = () => {
                     </div>
                 </section>
 
-                {/* 3. DISPLAY (RIGHT) */}
+                {}
                 <section id="section-display" className="scroll-section">
                     <div className="container px-4 px-md-5">
                         <div className="row w-100">
@@ -376,7 +376,7 @@ const Mac = () => {
                     </div>
                 </section>
 
-                {/* 4. BATTERY (BOTTOM / CENTERED) */}
+                {}
                 <section id="section-battery" className="scroll-section">
                     <div className="container px-4 px-md-5">
                         <div className="row w-100">
@@ -390,7 +390,7 @@ const Mac = () => {
                     </div>
                 </section>
 
-                {/* 5. DESIGN & PORTS (LEFT) */}
+                {}
                 <section id="section-design" className="scroll-section">
                     <div className="container px-4 px-md-5">
                         <div className="row w-100">
@@ -404,7 +404,7 @@ const Mac = () => {
                     </div>
                 </section>
 
-                {/* 6. FINAL HERO */}
+                {}
                 <section id="section-final" className="scroll-section d-flex align-items-center justify-content-center text-center">
                     <div className="container px-4 px-md-5">
                         <h2 className="gradient-text display-2 fw-bold gsap-reveal from-bottom">Pro anywhere.</h2>

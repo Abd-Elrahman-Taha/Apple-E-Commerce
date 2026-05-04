@@ -10,13 +10,13 @@ import '../store.css';
 gsap.registerPlugin(ScrollTrigger);
 
 const Store = () => {
-    // Top-level state
+    
     const [activeCategory, setActiveCategory] = useState('All');
     const [searchQuery, setSearchQuery] = useState('');
     const [activeFilters, setActiveFilters] = useState({});
     const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
-    // Initialize layout GSAP on mount
+    
     useEffect(() => {
         document.body.classList.add('light-theme');
 
@@ -39,10 +39,10 @@ const Store = () => {
         };
     }, []);
 
-    // Filter Logic
+    
     const filteredProducts = useMemo(() => {
         return storeProducts.filter(product => {
-            // 1. Search Query
+            
             if (searchQuery) {
                 const searchStr = searchQuery.toLowerCase();
                 const matchesSearch = product.name.toLowerCase().includes(searchStr) || 
@@ -50,16 +50,16 @@ const Store = () => {
                 if (!matchesSearch) return false;
             }
 
-            // 2. Category Match
+            
             if (activeCategory !== 'All' && product.category !== activeCategory) {
                 return false;
             }
 
-            // 3. Conditional Filters (Only check if they are for the active category)
+            
             if (activeCategory !== 'All') {
                 for (const [filterKey, selectedValues] of Object.entries(activeFilters)) {
                     if (selectedValues.length > 0) {
-                        // If the product doesn't have this attribute OR the attribute isn't in selected values
+                        
                         if (!product[filterKey] || !selectedValues.includes(product[filterKey])) {
                             return false;
                         }
@@ -71,12 +71,12 @@ const Store = () => {
         });
     }, [searchQuery, activeCategory, activeFilters]);
 
-    // Handlers
+    
     const handleCategoryChange = (category) => {
         if (activeCategory !== category) {
             setActiveCategory(category);
-            setActiveFilters({}); // Reset advanced filters on category change
-            setSearchQuery(''); // Optionally reset search as well
+            setActiveFilters({}); 
+            setSearchQuery(''); 
         }
     };
 
@@ -100,7 +100,7 @@ const Store = () => {
 
     return (
         <main id="smooth-wrapper" className="store-page-wrapper">
-            {/* Header Section */}
+            {}
             <section className="store-header">
                 <div className="container px-4 px-md-5">
                     <div className="row align-items-end">
@@ -127,7 +127,7 @@ const Store = () => {
                 </div>
             </section>
 
-            {/* Category Navigation */}
+            {}
             <section className="store-category-section reveal-elem">
                 <div className="container px-4 px-md-5">
                     <CategoryBar 
@@ -137,11 +137,11 @@ const Store = () => {
                 </div>
             </section>
 
-            {/* Main Layout: Sidebar + Grid */}
+            {}
             <section className="store-main-layout">
                 <div className="container px-4 px-md-5">
                     
-                    {/* Mobile Filter Toggle */}
+                    {}
                     {activeCategory !== 'All' && (
                         <div className="mobile-filter-toggle d-lg-none">
                             <button className="btn-open-filters" onClick={() => setIsMobileFilterOpen(true)}>
@@ -154,7 +154,7 @@ const Store = () => {
                     )}
 
                     <div className="store-grid-layout">
-                        {/* Sidebar */}
+                        {}
                         <div className={`store-sidebar-col ${activeCategory === 'All' ? 'd-none' : ''}`}>
                             <FilterPanel 
                                 activeCategory={activeCategory}
@@ -166,7 +166,7 @@ const Store = () => {
                             />
                         </div>
 
-                        {/* Product Grid */}
+                        {}
                         <div className={`store-products-col ${activeCategory === 'All' ? 'full-width' : ''}`}>
                             <ProductsGrid products={filteredProducts} />
                         </div>
@@ -174,7 +174,7 @@ const Store = () => {
                 </div>
             </section>
 
-            {/* Overlay for mobile drawer */}
+            {}
             <div 
                 className={`mobile-filter-overlay ${isMobileFilterOpen ? 'show' : ''}`}
                 onClick={() => setIsMobileFilterOpen(false)}

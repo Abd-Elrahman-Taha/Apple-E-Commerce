@@ -17,9 +17,9 @@ const Watch = () => {
 
         document.body.id = "body-bg";
 
-        // ---------------------------------------------------------
-        // 1. SCENE & CAMERA SETUP
-        // ---------------------------------------------------------
+        
+        
+        
         const scene = new THREE.Scene();
 
         const cameraGroup = new THREE.Group();
@@ -54,9 +54,9 @@ const Watch = () => {
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-        // ---------------------------------------------------------
-        // 2. WATCH LOADER & CENTERING LOGIC
-        // ---------------------------------------------------------
+        
+        
+        
         const loader = new GLTFLoader();
 
         let model = null;
@@ -121,9 +121,9 @@ const Watch = () => {
         };
         window.addEventListener('resize', onResize);
 
-        // ---------------------------------------------------------
-        // 3. GSAP SCROLL STORYTELLING
-        // ---------------------------------------------------------
+        
+        
+        
         function initScrollAnimations(isMobile) {
 
             const tlIntro = gsap.timeline();
@@ -202,9 +202,9 @@ const Watch = () => {
             }, 100);
         }
 
-        // ---------------------------------------------------------
-        // 4. CONTINUOUS IDLE PRE-RENDER LOOP
-        // ---------------------------------------------------------
+        
+        
+        
         const clock = new THREE.Clock();
 
         const animate = () => {
@@ -226,7 +226,7 @@ const Watch = () => {
 
         animate();
 
-        // Cleanup
+        
         return () => {
             window.removeEventListener('resize', onResize);
             cancelAnimationFrame(reqId);
@@ -268,7 +268,7 @@ const Watch = () => {
             </div>
 
             <main id="smooth-wrapper">
-                {/* 1. HERO SECTION */}
+                {}
                 <section id="section-hero" className="hero-section scroll-section d-flex align-items-start pt-5 mt-4">
                     <div className="container px-4 px-md-5">
                         <div className="hero-text text-center mx-auto">
@@ -282,7 +282,7 @@ const Watch = () => {
                     </div>
                 </section>
 
-                {/* 2. HEALTH / FITNESS (From Left) */}
+                {}
                 <section id="section-health" className="scroll-section d-flex align-items-center">
                     <div className="container px-4 px-md-5">
                         <div className="row w-100">
@@ -297,7 +297,7 @@ const Watch = () => {
                     </div>
                 </section>
 
-                {/* 3. DISPLAY (From Right) */}
+                {}
                 <section id="section-display" className="scroll-section d-flex align-items-center">
                     <div className="container px-4 px-md-5">
                         <div className="row w-100">
@@ -311,7 +311,7 @@ const Watch = () => {
                     </div>
                 </section>
 
-                {/* 4. DURABILITY (From Bottom) */}
+                {}
                 <section id="section-durability" className="scroll-section d-flex align-items-center">
                     <div className="container px-4 px-md-5">
                         <div className="row w-100 justify-content-center text-center">
@@ -325,7 +325,7 @@ const Watch = () => {
                     </div>
                 </section>
 
-                {/* 5. FINAL SHOWCASE HERO (Centered Drop) */}
+                {}
                 <section id="section-final" className="scroll-section d-flex align-items-center justify-content-center text-center">
                     <div className="container px-4 px-md-5">
                         <h2 className="hero-title reveal-text" style={{ fontSize: 'clamp(3rem, 6vw, 5rem)' }}>Adventure awaits.</h2>

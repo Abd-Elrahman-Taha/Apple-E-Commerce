@@ -1,9 +1,7 @@
-/* -------------------------------------------------------------
-   IPAD PAGE CSS: APPLE CINEMATIC DESIGN SYSTEM
-------------------------------------------------------------- */
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/* 1. CORE VARIABLES & BASE SYSTEM */
+
 :root {
     --ipad-bg: #000000;
     --ipad-text: #f5f5f7;
@@ -29,7 +27,7 @@ body#body-bg {
     transition: background-color 0.8s ease-out;
 }
 
-/* 2. CANVAS & 3D INTEGRATION */
+
 .canvas-container {
     position: fixed;
     top: 0;
@@ -37,7 +35,7 @@ body#body-bg {
     width: 100vw;
     height: 100vh;
     z-index: -1;
-    /* Always behind the scroll content */
+    
     pointer-events: none;
 }
 
@@ -53,13 +51,13 @@ main#smooth-wrapper {
     z-index: 10;
 }
 
-/* 3. GLASSMORPHISM NAVBAR */
+
 .apple-nav {
     background: var(--ipad-nav-bg) !important;
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    /* Premium edge rim */
+    
     font-size: 0.75rem;
     font-weight: 500;
     letter-spacing: -0.01em;
@@ -91,10 +89,10 @@ main#smooth-wrapper {
     transform: scale(1.1);
 }
 
-/* 4. SCROLL STORYTELLING LAYOUT */
+
 .scroll-section {
     min-height: 160vh;
-    /* Extremely tall sections for comfortable scrubbing */
+    
     position: relative;
     padding-top: 100px;
     display: flex;
@@ -103,7 +101,7 @@ main#smooth-wrapper {
 
 #section-hero {
     min-height: 100vh;
-    /* Hero section is fixed height */
+    
     padding-top: 15vh;
     align-items: flex-start;
     justify-content: center;
@@ -116,7 +114,7 @@ main#smooth-wrapper {
     text-align: center;
 }
 
-/* 5. TYPOGRAPHY SYSTEM */
+
 .hero-title {
     font-size: clamp(3.5rem, 8vw, 6.5rem);
     font-weight: 800;
@@ -152,7 +150,7 @@ main#smooth-wrapper {
     font-weight: 400;
     line-height: 1.4;
     letter-spacing: -0.015em;
-    /* Soft blur panel for premium aesthetic over 3D rendering */
+    
     background: var(--ipad-panel-bg);
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
@@ -171,7 +169,7 @@ main#smooth-wrapper {
     padding-bottom: 0.5rem;
 }
 
-/* 6. BUTTON DESIGN */
+
 .hero-buttons {
     display: flex;
     gap: 1.5rem;
@@ -228,7 +226,7 @@ main#smooth-wrapper {
     transform: translateY(3px);
 }
 
-/* 7. CINEMATIC GRADIENT LAYERS */
+
 #section-final::before {
     content: '';
     position: absolute;
@@ -243,17 +241,17 @@ main#smooth-wrapper {
 
 .feature-text {
     z-index: 2;
-    /* Float above WebGL */
+    
     max-width: 500px;
 }
 
-/* 8. ALTERNATING ANIMATION PREPARATION (GSAP READY) */
+
 .gsap-reveal {
     opacity: 0;
     visibility: hidden;
 }
 
-/* Directional defaults for staggered reveals */
+
 .from-left {
     transform: translateX(-60px) translateY(10px);
 }
@@ -266,7 +264,7 @@ main#smooth-wrapper {
     transform: translateY(50px);
 }
 
-/* 9. HEADER / HERO STAGGERING PREFS */
+
 .hero-title,
 .hero-buttons {
     opacity: 0;
@@ -278,7 +276,7 @@ main#smooth-wrapper {
     transform: translateY(20px) scale(0.95);
 }
 
-/* Mobile Responsiveness tweaks */
+
 @media (max-width: 991.98px) {
     .navbar-collapse {
         background: rgba(0, 0, 0, 0.9);
@@ -288,7 +286,7 @@ main#smooth-wrapper {
     }
 }
 
-/* 10. RESPONSIVE STRUCTURE */
+
 @media (max-width: 768px) {
     .apple-nav {
         padding: 0.25rem 0;
@@ -297,7 +295,7 @@ main#smooth-wrapper {
     .scroll-section {
         min-height: 120vh;
         align-items: flex-end;
-        /* Push text to bottom on mobile so model is visible */
+        
         padding-bottom: 10vh;
     }
 
@@ -310,7 +308,7 @@ main#smooth-wrapper {
         text-align: center;
         max-width: 100%;
         margin-top: 50vh;
-        /* clear the 3D model footprint */
+        
     }
 
     .text-md-end,
@@ -320,7 +318,7 @@ main#smooth-wrapper {
 
     .from-left,
     .from-right {
-        /* On narrow mobile, default everything to bottom origin to avoid horizontal scrollbar breaks */
+        
         transform: translateY(40px);
     }
 

@@ -1,5 +1,5 @@
 export const storeProducts = [
-    // --- iPhones ---
+    
     {
         id: "p1",
         name: "iPhone 15 Pro Max",
@@ -45,7 +45,7 @@ export const storeProducts = [
         image: "/Images/iphone15.jpg",
         badge: ""
     },
-    // --- Macs ---
+    
     {
         id: "p2",
         name: "MacBook Air M3",
@@ -91,7 +91,7 @@ export const storeProducts = [
         image: "/Images/Studio Display - Nano-texture glass….jpg",
         badge: ""
     },
-    // --- iPads ---
+    
     {
         id: "p3",
         name: "iPad Pro 12.9\"",
@@ -120,7 +120,7 @@ export const storeProducts = [
         image: "/Images/ipad.jpg",
         badge: "Value"
     },
-    // --- AirPods ---
+    
     {
         id: "p4",
         name: "AirPods Pro",
@@ -145,7 +145,7 @@ export const storeProducts = [
         image: "/Images/airpods.jpg",
         badge: ""
     },
-    // --- Apple Watch ---
+    
     {
         id: "p5",
         name: "Apple Watch Ultra 2",

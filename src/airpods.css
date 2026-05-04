@@ -20,7 +20,7 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Canvas Wrapper */
+
 .canvas-container {
     position: fixed;
     top: 0;
@@ -29,7 +29,7 @@ body {
     height: 100vh;
     z-index: -1;
     pointer-events: none;
-    /* Let clicks pass through if we want it purely as background */
+    
 }
 
 canvas#webgl {
@@ -38,7 +38,7 @@ canvas#webgl {
     height: 100%;
 }
 
-/* Typography Hierarchy */
+
 h1,
 h2,
 h3,
@@ -52,7 +52,7 @@ h6 {
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    /* Premium edge rim */
+    
     font-size: 0.75rem;
     font-weight: 500;
     letter-spacing: -0.01em;
@@ -83,7 +83,7 @@ h6 {
     opacity: 1;
     transform: scale(1.1);
 }
-/* Sections */
+
 main {
     position: relative;
     z-index: 10;
@@ -91,12 +91,12 @@ main {
 
 .scroll-section {
     min-height: 120vh;
-    /* extended height for robust scroll triggers */
+    
     position: relative;
     padding-top: 80px;
 }
 
-/* Hero Section */
+
 .hero-section {
     text-align: center;
 }
@@ -130,7 +130,7 @@ main {
     transform: translateY(20px) scale(0.95);
 }
 
-/* Buttons */
+
 .hero-buttons {
     opacity: 0;
     transform: translateY(30px);
@@ -160,7 +160,7 @@ main {
     color: var(--apple-bg);
 }
 
-/* Details Section */
+
 .feature-text h2 {
     letter-spacing: -0.03em;
     text-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
@@ -185,14 +185,14 @@ main {
     color: var(--apple-text);
 }
 
-/* Dynamic text coloring for bright sections */
+
 .text-dark-transition.text-dark-mode {
     color: #111 !important;
     text-shadow: none;
 }
 
 
-/* Mobile Responsiveness tweaks */
+
 @media (max-width: 991.98px) {
     .navbar-collapse {
         background: rgba(0, 0, 0, 0.9);
@@ -215,7 +215,7 @@ main {
     .feature-text {
         text-align: center;
         margin-top: 55vh;
-        /* Push text down on mobile so model is visible */
+        
     }
 
     .text-md-end {

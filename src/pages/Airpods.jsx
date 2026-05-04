@@ -16,9 +16,9 @@ const Airpods = () => {
 
         document.body.id = "body-bg";
 
-        // ---------------------------------------------------------
-        // 1. Scene Setup
-        // ---------------------------------------------------------
+        
+        
+        
         const scene = new THREE.Scene();
 
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
@@ -50,9 +50,9 @@ const Airpods = () => {
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-        // ---------------------------------------------------------
-        // 2. Load Model & Setup Animations
-        // ---------------------------------------------------------
+        
+        
+        
         const loader = new GLTFLoader();
         let mixer = null;
         let model = null;
@@ -102,9 +102,9 @@ const Airpods = () => {
         };
         window.addEventListener('resize', onResize);
 
-        // ---------------------------------------------------------
-        // 3. GSAP Animation Logic
-        // ---------------------------------------------------------
+        
+        
+        
         function initAnimations(isMobile) {
             const tlIntro = gsap.timeline();
 
@@ -234,9 +234,9 @@ const Airpods = () => {
             }, 100);
         }
 
-        // ---------------------------------------------------------
-        // 4. Render Loop
-        // ---------------------------------------------------------
+        
+        
+        
         const clock = new THREE.Clock();
 
         const animate = () => {
@@ -252,7 +252,7 @@ const Airpods = () => {
 
         animate();
 
-        // Cleanup
+        
         return () => {
             window.removeEventListener('resize', onResize);
             cancelAnimationFrame(reqId);
@@ -294,7 +294,7 @@ const Airpods = () => {
             </div>
 
             <main id="smooth-wrapper">
-                {/* 1. HERO SECTION */}
+                {}
                 <section id="section-hero" className="scroll-section d-flex align-items-center">
                     <div className="container px-4 px-md-5">
                         <div className="hero-text text-center mx-auto">
@@ -309,7 +309,7 @@ const Airpods = () => {
                     </div>
                 </section>
 
-                {/* 2. NOISE CANCELLATION SECTION */}
+                {}
                 <section id="section-anc" className="scroll-section d-flex align-items-center">
                     <div className="container px-4 px-md-5">
                         <div className="row w-100">
@@ -324,7 +324,7 @@ const Airpods = () => {
                     </div>
                 </section>
 
-                {/* 3. TRANSPARENCY MODE SECTION */}
+                {}
                 <section id="section-transparency" className="scroll-section d-flex align-items-center">
                     <div className="container px-4 px-md-5">
                         <div className="row w-100">
@@ -339,7 +339,7 @@ const Airpods = () => {
                     </div>
                 </section>
 
-                {/* 4. BATTERY SECTION */}
+                {}
                 <section id="section-battery" className="scroll-section d-flex align-items-center">
                     <div className="container px-4 px-md-5">
                         <div className="row w-100">
@@ -355,7 +355,7 @@ const Airpods = () => {
                     </div>
                 </section>
 
-                {/* 5. DESIGN SECTION */}
+                {}
                 <section id="section-design"
                     className="scroll-section d-flex align-items-center justify-content-center text-center">
                     <div className="container px-4 px-md-5">

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 
-// Configuration for conditional filters based on active category
+
 const filterConfig = {
     iPhone: [
         { key: 'model', label: 'Model', options: ['iPhone 15', 'iPhone 16', 'iPhone 17'] },
@@ -30,7 +30,7 @@ const filterConfig = {
 
 const FilterPanel = ({ activeCategory, activeFilters, onToggleFilter, onClearFilters, isOpen, onClose }) => {
     
-    // Determine which filter groups to show
+    
     const filterGroups = useMemo(() => {
         if (activeCategory === 'All') return [];
         return filterConfig[activeCategory] || [];

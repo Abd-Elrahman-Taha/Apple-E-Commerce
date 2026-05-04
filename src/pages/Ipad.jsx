@@ -13,13 +13,13 @@ const Ipad = () => {
 
     useEffect(() => {
         let reqId;
-        let isAtEnd = false; // Flag for infinite end rotation
+        let isAtEnd = false; 
 
         document.body.id = "body-bg";
 
-        // ---------------------------------------------------------
-        // 1. SCENE & CAMERA SETUP
-        // ---------------------------------------------------------
+        
+        
+        
         const scene = new THREE.Scene();
 
         const cameraGroup = new THREE.Group();
@@ -29,7 +29,7 @@ const Ipad = () => {
         cameraGroup.add(camera);
         scene.add(cameraGroup);
 
-        // Premium Apple-Style Studio Lighting
+        
         const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
         scene.add(ambientLight);
 
@@ -37,7 +37,7 @@ const Ipad = () => {
         keyLight.position.set(5, 10, 8);
         scene.add(keyLight);
 
-        const rimLight = new THREE.DirectionalLight(0xa0c4ff, 3.5); // Cool premium edge glow
+        const rimLight = new THREE.DirectionalLight(0xa0c4ff, 3.5); 
         rimLight.position.set(-8, 5, -10);
         scene.add(rimLight);
 
@@ -54,9 +54,9 @@ const Ipad = () => {
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-        // ---------------------------------------------------------
-        // 2. IPAD LOADER & CENTERING LOGIC
-        // ---------------------------------------------------------
+        
+        
+        
         const loader = new GLTFLoader();
 
         let model = null;
@@ -71,7 +71,7 @@ const Ipad = () => {
                 (gltf) => {
                     model = gltf.scene;
 
-                    // Geometry Centering & Sizing
+                    
                     const box = new THREE.Box3().setFromObject(model);
                     const center = new THREE.Vector3();
                     if (!box.isEmpty()) {
@@ -85,7 +85,7 @@ const Ipad = () => {
                         }
                     }
 
-                    // Disable frustum culling
+                    
                     model.traverse((node) => {
                         if (node.isMesh) {
                             node.frustumCulled = false;
@@ -95,18 +95,18 @@ const Ipad = () => {
                     modelRotationGroup.add(model);
                     modelRotationGroup.updateMatrixWorld(true);
 
-                    // Re-calc specific geometric center to perfectly lock iPad vertically over (0,0)
+                    
                     const trueBox = new THREE.Box3().setFromObject(modelRotationGroup);
                     const trueCenter = trueBox.getCenter(new THREE.Vector3());
                     modelRotationGroup.position.y -= trueCenter.y;
                     modelRotationGroup.position.x -= trueCenter.x;
                     modelRotationGroup.position.z -= trueCenter.z;
 
-                    // Initial Pose Setup
+                    
                     modelPositionGroup.position.set(0, -3, 0);
                     modelPositionGroup.scale.set(0.01, 0.01, 0.01);
 
-                    // Native iPad models are usually flat, so we rotate X up to face camera
+                    
                     modelRotationGroup.rotation.set(Math.PI * 0.45, -Math.PI * 0.1, 0);
 
                     const isMobile = window.innerWidth <= 768;
@@ -128,21 +128,21 @@ const Ipad = () => {
         };
         window.addEventListener('resize', onResize);
 
-        // ---------------------------------------------------------
-        // 3. GSAP SCROLL STORYTELLING
-        // ---------------------------------------------------------
+        
+        
+        
         function initScrollAnimations(isMobile) {
 
-            // A. Intro Drop
+            
             const tlIntro = gsap.timeline();
             tlIntro.fromTo('.apple-nav', { y: '-100%', opacity: 0 }, { y: '0%', opacity: 1, duration: 1, ease: 'power3.out' });
             tlIntro.to('.reveal-hero', { opacity: 1, y: 0, scale: 1, duration: 1.2, stagger: 0.2, ease: 'power3.out' }, "-=0.5");
 
-            // Graceful iPad cinematic drop-in reveal
+            
             tlIntro.to(modelPositionGroup.scale, { x: 1, y: 1, z: 1, duration: 2.2, ease: 'power3.out' }, "-=1.0");
             tlIntro.to(modelPositionGroup.position, { y: 0, duration: 2.2, ease: 'power3.out' }, "-=2.2");
 
-            // B. Master 3D Timeline
+            
             const masterTl = gsap.timeline({
                 scrollTrigger: {
                     trigger: "#smooth-wrapper",
@@ -218,9 +218,9 @@ const Ipad = () => {
             }, 100);
         }
 
-        // ---------------------------------------------------------
-        // 4. CONTINUOUS IDLE LOOP
-        // ---------------------------------------------------------
+        
+        
+        
         const clock = new THREE.Clock();
 
         const animate = () => {
@@ -242,7 +242,7 @@ const Ipad = () => {
 
         animate();
 
-        // Cleanup
+        
         return () => {
             window.removeEventListener('resize', onResize);
             cancelAnimationFrame(reqId);
@@ -284,7 +284,7 @@ const Ipad = () => {
             </div>
 
             <main id="smooth-wrapper">
-                {/* 1. HERO (Center) */}
+                {}
                 <section id="section-hero" className="hero-section scroll-section">
                     <div className="container px-4 px-md-5">
                         <div className="hero-text">
@@ -298,7 +298,7 @@ const Ipad = () => {
                     </div>
                 </section>
 
-                {/* 2. PERFORMANCE (LEFT) */}
+                {}
                 <section id="section-performance" className="scroll-section">
                     <div className="container px-4 px-md-5">
                         <div className="row w-100">
@@ -313,7 +313,7 @@ const Ipad = () => {
                     </div>
                 </section>
 
-                {/* 3. DISPLAY (RIGHT) */}
+                {}
                 <section id="section-display" className="scroll-section">
                     <div className="container px-4 px-md-5">
                         <div className="row w-100">
@@ -328,7 +328,7 @@ const Ipad = () => {
                     </div>
                 </section>
 
-                {/* 4. PENCIL/CREATIVITY (BOTTOM / CENTERED) */}
+                {}
                 <section id="section-pencil" className="scroll-section">
                     <div className="container px-4 px-md-5">
                         <div className="row w-100">
@@ -343,7 +343,7 @@ const Ipad = () => {
                     </div>
                 </section>
 
-                {/* 5. DESIGN (LEFT) */}
+                {}
                 <section id="section-design" className="scroll-section">
                     <div className="container px-4 px-md-5">
                         <div className="row w-100">
@@ -358,7 +358,7 @@ const Ipad = () => {
                     </div>
                 </section>
 
-                {/* 6. FINAL HERO */}
+                {}
                 <section id="section-final" className="scroll-section d-flex align-items-center justify-content-center text-center">
                     <div className="container px-4 px-md-5">
                         <h2 className="gradient-text display-2 fw-bold gsap-reveal from-bottom">Your next computer.</h2>

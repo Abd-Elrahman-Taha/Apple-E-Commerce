@@ -45,7 +45,7 @@ const SignupForm = forwardRef(({ onSwitch }, ref) => {
 
             const data = await response.json();
             if (data.success) {
-                onSwitch(); // Switch back to login
+                onSwitch(); 
             } else {
                 setError(data.message || 'Signup failed');
             }
@@ -127,8 +127,6 @@ const SignupForm = forwardRef(({ onSwitch }, ref) => {
                                 <option value="" disabled>Select</option>
                                 <option value="male">Male</option>
                                 <option value="female">Female</option>
-                                <option value="other">Other</option>
-                                <option value="prefer-not">Prefer not to say</option>
                             </select>
                         </div>
                     </div>

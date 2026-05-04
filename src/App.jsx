@@ -12,19 +12,22 @@ import Iphone from './pages/Iphone';
 import Watch from './pages/Watch';
 import Airpods from './pages/Airpods';
 import Login from './pages/Login';
+import Bag from './pages/Bag';
+import Checkout from './pages/Checkout';
+import Tracking from './pages/Tracking';
 
-import './style.css'; // Global styles
+import './style.css'; 
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Scroll-to-top on every route change + GSAP refresh
+
 const ScrollToTop = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
     window.scrollTo(0, 0);
 
-    // Give React one frame to render, then refresh ScrollTrigger
+    
     const raf = requestAnimationFrame(() => {
       ScrollTrigger.refresh();
     });
@@ -49,6 +52,9 @@ const App = () => {
         <Route path="/watch" element={<Watch />} />
         <Route path="/airpods" element={<Airpods />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/bag" element={<Bag />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/tracking" element={<Tracking />} />
       </Routes>
     </>
   );

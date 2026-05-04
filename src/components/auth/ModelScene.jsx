@@ -3,17 +3,15 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useGLTF, Environment } from '@react-three/drei';
 import * as THREE from 'three';
 
-/* ───────────────────────────────────────────
-   Inner rotating model
-   ─────────────────────────────────────────── */
+
 const AppleModel = forwardRef(({ modelPath }, ref) => {
     const groupRef = useRef();
     const { scene } = useGLTF(modelPath);
 
-    // Expose the group ref to parent
+    
     useImperativeHandle(ref, () => groupRef.current);
 
-    // Center the model geometry
+    
     useEffect(() => {
         if (scene) {
             const box = new THREE.Box3().setFromObject(scene);
@@ -22,7 +20,7 @@ const AppleModel = forwardRef(({ modelPath }, ref) => {
         }
     }, [scene]);
 
-    // Continuous idle rotation
+    
     useFrame((_, delta) => {
         if (groupRef.current) {
             groupRef.current.rotation.y += delta * 0.3;
@@ -37,10 +35,10 @@ const AppleModel = forwardRef(({ modelPath }, ref) => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // Push further back and scale down on mobile
+    
     const modelScale = isMobile ? 1.6 : 2.5;
     const modelZ = isMobile ? -5 : -2;
-    const modelX = isMobile ? 0 : -2; // Slightly off-center to the left on desktop
+    const modelX = isMobile ? 0 : -2; 
 
     return (
         <group ref={groupRef} scale={modelScale} position={[modelX, 0, modelZ]}>
@@ -51,9 +49,7 @@ const AppleModel = forwardRef(({ modelPath }, ref) => {
 
 AppleModel.displayName = 'AppleModel';
 
-/* ───────────────────────────────────────────
-   Glow light rig
-   ─────────────────────────────────────────── */
+
 const LightRig = () => {
     const pointLightRef = useRef();
     const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 768);
@@ -64,7 +60,7 @@ const LightRig = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // Subtle breathing glow, less intense on mobile
+    
     const baseIntensity = isMobile ? 2 : 3;
 
     useFrame(({ clock }) => {
@@ -98,14 +94,12 @@ const LightRig = () => {
     );
 };
 
-/* ───────────────────────────────────────────
-   Camera controller (positions camera nicely)
-   ─────────────────────────────────────────── */
+
 const CameraSetup = () => {
     const { camera } = useThree();
 
     useEffect(() => {
-        // Move camera further away to reduce dominance
+        
         camera.position.set(0, 0, 14);
         camera.lookAt(0, 0, 0);
     }, [camera]);
@@ -113,13 +107,11 @@ const CameraSetup = () => {
     return null;
 };
 
-/* ───────────────────────────────────────────
-   Exported Canvas Scene
-   ─────────────────────────────────────────── */
+
 const ModelScene = forwardRef((props, ref) => {
     const modelRef = useRef();
 
-    // Forward the inner model ref
+    
     useImperativeHandle(ref, () => ({
         getModel: () => modelRef.current,
     }));
