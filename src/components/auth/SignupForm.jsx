@@ -31,7 +31,7 @@ const SignupForm = forwardRef(({ onSwitch }, ref) => {
         setLoading(true);
 
         try {
-            const response = await fetch('http://localhost:3000/api/signup', {
+            const response = await fetch('http://bhecommerce.runasp.net/api/signup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
