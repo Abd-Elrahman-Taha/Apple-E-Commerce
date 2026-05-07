@@ -107,6 +107,7 @@ body.light-theme main#smooth-wrapper {
     position: relative;
     width: 100%;
     margin-top: 16px;
+    
 }
 
 .search-icon {
@@ -116,6 +117,10 @@ body.light-theme main#smooth-wrapper {
     transform: translateY(-50%);
     color: var(--apple-muted-store);
     font-size: 1.1rem;
+}
+
+.form-control::placeholder{
+    padding-left: 30px;
 }
 
 #productSearch {
@@ -528,7 +533,7 @@ body.light-theme main#smooth-wrapper {
     padding: 2px 6px;
     border-radius: 10px;
 }
-
+ 
 .mobile-filter-overlay {
     position: fixed;
     inset: 0;
@@ -593,9 +598,7 @@ body.light-theme main#smooth-wrapper {
         padding: 30px;
     }
 
-    .store-filter-panel.open {
-        
-    }
+    
 
     
     .store-sidebar-col:has(.store-filter-panel.open) {

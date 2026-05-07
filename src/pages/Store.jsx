@@ -117,6 +117,7 @@ const Store = () => {
                             <div className="search-container">
                                 <i className="fa-solid fa-magnifying-glass search-icon"></i>
                                 <input
+                                    id='search'
                                     type="text"
                                     className="form-control"
                                     placeholder="Search products, categories..."
