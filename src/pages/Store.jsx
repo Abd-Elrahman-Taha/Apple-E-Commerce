@@ -5,7 +5,7 @@ import CategoryBar from '../components/store/CategoryBar';
 import FilterPanel from '../components/store/FilterPanel';
 import ProductsGrid from '../components/store/ProductsGrid';
 import '../store.css';
-import axios from 'axios';
+import api from '../api/api';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -15,12 +15,22 @@ const Store = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [activeFilters, setActiveFilters] = useState({});
     const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     // Fetch products
     useEffect(() => {
-        axios.get('http://bhecommerce.runasp.net/api/Product')
-            .then(response => setProducts(response.data.data || []))
-            .catch(error => console.error('Error fetching products:', error));
+        setLoading(true);
+        api.get('/Product')
+            .then(response => {
+                setProducts(response.data.data || []);
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error('Error fetching products:', err);
+                setError('Failed to load products. Please check your internet connection and try again.');
+                setLoading(false);
+            });
     }, []);
 
     // GSAP animations
@@ -167,8 +177,20 @@ const Store = () => {
                         </div>
 
                         <div className={`store-products-col ${activeCategory === 'All' ? 'full-width' : ''}`}>
-                            {/* FIXED: Now using filteredProducts */}
-                            <ProductsGrid products={filteredProducts} />
+                            {loading ? (
+                                <div className="store-loading-state">
+                                    <div className="apple-spinner"></div>
+                                    <p>Loading products...</p>
+                                </div>
+                            ) : error ? (
+                                <div className="store-error-state">
+                                    <i className="fa-solid fa-triangle-exclamation"></i>
+                                    <p>{error}</p>
+                                    <button onClick={() => window.location.reload()} className="btn-retry">Retry</button>
+                                </div>
+                            ) : (
+                                <ProductsGrid products={filteredProducts} />
+                            )}
                         </div>
                     </div>
                 </div>

@@ -1,4 +1,5 @@
 import React, { useState, forwardRef } from 'react';
+import api from '../../api/api';
 
 const SignupForm = forwardRef(({ onSwitch }, ref) => {
     const [formData, setFormData] = useState({
@@ -31,19 +32,15 @@ const SignupForm = forwardRef(({ onSwitch }, ref) => {
         setLoading(true);
 
         try {
-            const response = await fetch('http://bhecommerce.runasp.net/api/signup', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: formData.name,
-                    email: formData.email,
-                    age: formData.age,
-                    gender: formData.gender,
-                    password: formData.password,
-                }),
+            const response = await api.post('/signup', {
+                name: formData.name,
+                email: formData.email,
+                age: formData.age,
+                gender: formData.gender,
+                password: formData.password,
             });
 
-            const data = await response.json();
+            const data = response.data;
             if (data.success) {
                 onSwitch(); 
             } else {
@@ -51,7 +48,7 @@ const SignupForm = forwardRef(({ onSwitch }, ref) => {
             }
         } catch (err) {
             console.error('Signup error:', err);
-            setError('An error occurred. Please try again.');
+            setError(err.response?.data?.message || 'An error occurred. Please try again.');
         } finally {
             setLoading(false);
         }

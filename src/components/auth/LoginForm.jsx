@@ -1,6 +1,9 @@
 import React, { useState, forwardRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import api from '../../api/api';
 
 const LoginForm = forwardRef(({ onSwitch }, ref) => {
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -12,21 +15,20 @@ const LoginForm = forwardRef(({ onSwitch }, ref) => {
         setError('');
 
         try {
-            const response = await fetch('http://bhecommerce.runasp.net/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: email, password }),
+            const response = await api.post('/login', {
+                username: email,
+                password
             });
 
-            const data = await response.json();
+            const data = response.data;
             if (data.success) {
-                window.location.href = '/store';
+                navigate('/store');
             } else {
                 setError(data.message || 'Invalid credentials');
             }
         } catch (err) {
             console.error('Login error:', err);
-            setError('An error occurred. Please try again.');
+            setError(err.response?.data?.message || 'An error occurred. Please try again.');
         } finally {
             setLoading(false);
         }

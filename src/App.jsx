@@ -3,6 +3,7 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Navbar from './components/Navbar';
+import ErrorBoundary from './components/ErrorBoundary';
 
 import Home from './pages/Home';
 import Store from './pages/Store';
@@ -40,7 +41,7 @@ const ScrollToTop = () => {
 
 const App = () => {
   return (
-    <>
+    <ErrorBoundary>
       <ScrollToTop />
       <Navbar />
       <Routes>
@@ -56,7 +57,7 @@ const App = () => {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/tracking" element={<Tracking />} />
       </Routes>
-    </>
+    </ErrorBoundary>
   );
 };
 
