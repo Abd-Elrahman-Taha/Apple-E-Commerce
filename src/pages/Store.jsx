@@ -1,66 +1,71 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { storeProducts } from '../data/storeProducts';
 import CategoryBar from '../components/store/CategoryBar';
 import FilterPanel from '../components/store/FilterPanel';
 import ProductsGrid from '../components/store/ProductsGrid';
 import '../store.css';
+import axios from 'axios';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Store = () => {
-    
     const [activeCategory, setActiveCategory] = useState('All');
+    const [products, setProducts] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [activeFilters, setActiveFilters] = useState({});
     const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
-    
+    // Fetch products
+    useEffect(() => {
+        axios.get('http://bhecommerce.runasp.net/api/Product')
+            .then(response => setProducts(response.data.data || []))
+            .catch(error => console.error('Error fetching products:', error));
+    }, []);
+
+    // GSAP animations
     useEffect(() => {
         document.body.classList.add('light-theme');
 
         const tl = gsap.timeline();
-        tl.fromTo(".apple-nav-light",
-            { y: -100, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }
-        );
-        tl.fromTo(".reveal-elem",
-            { opacity: 0, y: 20, autoAlpha: 0 },
-            { opacity: 1, y: 0, autoAlpha: 1, duration: 0.6, stagger: 0.1, ease: "power2.out" },
+        tl.fromTo(".apple-nav-light", { y: -100, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" });
+        tl.fromTo(".reveal-elem", 
+            { opacity: 0, y: 20, autoAlpha: 0 }, 
+            { opacity: 1, y: 0, autoAlpha: 1, duration: 0.6, stagger: 0.1, ease: "power2.out" }, 
             "-=0.4"
         );
 
         return () => {
             document.body.classList.remove('light-theme');
-            const nav = document.querySelector('.apple-nav-light') || document.querySelector('.apple-nav');
-            if (nav) gsap.set(nav, { clearProps: "all" });
             ScrollTrigger.getAll().forEach(t => t.kill());
         };
     }, []);
 
-    
+    // Fixed filtering logic
     const filteredProducts = useMemo(() => {
-        return storeProducts.filter(product => {
-            
+        return products.filter(product => {
+            // Search
             if (searchQuery) {
                 const searchStr = searchQuery.toLowerCase();
-                const matchesSearch = product.name.toLowerCase().includes(searchStr) || 
-                                      product.category.toLowerCase().includes(searchStr);
+                const matchesSearch =
+                    product.name?.toLowerCase().includes(searchStr) ||
+                    product.categoryName?.toLowerCase().includes(searchStr) ||
+                    product.brandName?.toLowerCase().includes(searchStr);
+
                 if (!matchesSearch) return false;
             }
 
-            
-            if (activeCategory !== 'All' && product.category !== activeCategory) {
+            // Category filter
+            if (activeCategory !== 'All' && product.categoryName !== activeCategory) {
                 return false;
             }
 
-            
+            // Advanced filters (only when a specific category is selected)
             if (activeCategory !== 'All') {
                 for (const [filterKey, selectedValues] of Object.entries(activeFilters)) {
-                    if (selectedValues.length > 0) {
-                        
-                        if (!product[filterKey] || !selectedValues.includes(product[filterKey])) {
+                    if (selectedValues?.length > 0) {
+                        const productValue = product[filterKey];
+                        if (!productValue || !selectedValues.includes(productValue)) {
                             return false;
                         }
                     }
@@ -69,9 +74,8 @@ const Store = () => {
 
             return true;
         });
-    }, [searchQuery, activeCategory, activeFilters]);
+    }, [products, searchQuery, activeCategory, activeFilters]);
 
-    
     const handleCategoryChange = (category) => {
         if (activeCategory !== category) {
             setActiveCategory(category);
@@ -82,14 +86,14 @@ const Store = () => {
 
     const handleToggleFilter = (filterKey, value) => {
         setActiveFilters(prev => {
-            const currentSelected = prev[filterKey] || [];
-            const isCurrentlySelected = currentSelected.includes(value);
+            const current = prev[filterKey] || [];
+            const isSelected = current.includes(value);
 
             return {
                 ...prev,
-                [filterKey]: isCurrentlySelected
-                    ? currentSelected.filter(v => v !== value)
-                    : [...currentSelected, value]
+                [filterKey]: isSelected
+                    ? current.filter(v => v !== value)
+                    : [...current, value]
             };
         });
     };
@@ -100,7 +104,6 @@ const Store = () => {
 
     return (
         <main id="smooth-wrapper" className="store-page-wrapper">
-            {}
             <section className="store-header">
                 <div className="container px-4 px-md-5">
                     <div className="row align-items-end">
@@ -115,7 +118,6 @@ const Store = () => {
                                 <i className="fa-solid fa-magnifying-glass search-icon"></i>
                                 <input
                                     type="text"
-                                    id="productSearch"
                                     className="form-control"
                                     placeholder="Search products, categories..."
                                     value={searchQuery}
@@ -127,7 +129,6 @@ const Store = () => {
                 </div>
             </section>
 
-            {}
             <section className="store-category-section reveal-elem">
                 <div className="container px-4 px-md-5">
                     <CategoryBar 
@@ -137,24 +138,22 @@ const Store = () => {
                 </div>
             </section>
 
-            {}
             <section className="store-main-layout">
                 <div className="container px-4 px-md-5">
-                    
-                    {}
                     {activeCategory !== 'All' && (
                         <div className="mobile-filter-toggle d-lg-none">
                             <button className="btn-open-filters" onClick={() => setIsMobileFilterOpen(true)}>
                                 <i className="fa-solid fa-sliders"></i> Filters
-                                {Object.values(activeFilters).flat().length > 0 && 
-                                    <span className="filter-badge">{Object.values(activeFilters).flat().length}</span>
-                                }
+                                {Object.values(activeFilters).flat().length > 0 && (
+                                    <span className="filter-badge">
+                                        {Object.values(activeFilters).flat().length}
+                                    </span>
+                                )}
                             </button>
                         </div>
                     )}
 
                     <div className="store-grid-layout">
-                        {}
                         <div className={`store-sidebar-col ${activeCategory === 'All' ? 'd-none' : ''}`}>
                             <FilterPanel 
                                 activeCategory={activeCategory}
@@ -166,15 +165,14 @@ const Store = () => {
                             />
                         </div>
 
-                        {}
                         <div className={`store-products-col ${activeCategory === 'All' ? 'full-width' : ''}`}>
+                            {/* FIXED: Now using filteredProducts */}
                             <ProductsGrid products={filteredProducts} />
                         </div>
                     </div>
                 </div>
             </section>
 
-            {}
             <div 
                 className={`mobile-filter-overlay ${isMobileFilterOpen ? 'show' : ''}`}
                 onClick={() => setIsMobileFilterOpen(false)}

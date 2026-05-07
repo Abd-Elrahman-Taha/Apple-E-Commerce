@@ -23,10 +23,9 @@ const Bag = () => {
     }, []);
 
 
-    const subtotal = cart.reduce((sum, item) => {
-        const price = parseFloat(item.price.replace('$', '').replace(',', ''));
-        return sum + (price * item.quantity);
-    }, 0);
+  const subtotal = cart.reduce((sum, item) => {
+    return sum + (Number(item.price) * item.quantity);
+}, 0);
     const shipping = subtotal > 0 ? 0 : 0;
     const total = subtotal + shipping;
 

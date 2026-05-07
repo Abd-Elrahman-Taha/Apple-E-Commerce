@@ -28,6 +28,7 @@ const filterConfig = {
     ]
 };
 
+
 const FilterPanel = ({ activeCategory, activeFilters, onToggleFilter, onClearFilters, isOpen, onClose }) => {
     
     
@@ -36,7 +37,7 @@ const FilterPanel = ({ activeCategory, activeFilters, onToggleFilter, onClearFil
         return filterConfig[activeCategory] || [];
     }, [activeCategory]);
 
-    const hasActiveFilters = Object.values(activeFilters).some(arr => arr.length > 0);
+const hasActiveFilters = Object.values(activeFilters || {}).some(arr => arr?.length > 0);
 
     if (activeCategory === 'All') {
         return (

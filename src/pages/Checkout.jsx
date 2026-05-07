@@ -34,10 +34,9 @@ const Checkout = () => {
     }, [cart.length, navigate]);
 
 
-    const subtotal = cart.reduce((sum, item) => {
-        const price = parseFloat(item.price.replace('$', '').replace(',', ''));
-        return sum + (price * item.quantity);
-    }, 0);
+ const subtotal = cart.reduce((sum, item) => {
+    return sum + (Number(item.price) * item.quantity);
+}, 0);
     const shipping = 0;
     const total = subtotal + shipping;
     const formatPrice = (num) => `$${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
