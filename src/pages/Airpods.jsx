@@ -301,7 +301,7 @@ const Airpods = () => {
                             <h1 className="hero-title reveal-hero">AirPods Pro</h1>
                             <h2 className="hero-subtitle reveal-hero">Immersive sound.<br />Zero distractions.</h2>
                             <div className="hero-buttons mt-5 reveal-hero">
-                                <Link to="/store" className="btn btn-apple-primary">Buy Now</Link>
+                                <Link to="/store?category=AirPods" className="btn btn-apple-primary">Buy Now</Link>
                                 <a href="#section-anc" className="btn btn-apple-link ms-4">Explore <i
                                     className="bi bi-chevron-down fs-6"></i></a>
                             </div>

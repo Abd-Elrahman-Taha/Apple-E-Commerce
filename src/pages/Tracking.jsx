@@ -1,10 +1,36 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import gsap from 'gsap';
 import useStore from '../store/useStore';
 import '../tracking.css';
+import { getOrders } from '../api/orders';
+import { formatPrice, mapOrder } from '../utils/storeData';
 
 const Tracking = () => {
-    const { orders } = useStore();
+    const { orders: storedOrders } = useStore();
+    const [orders, setOrders] = useState(storedOrders);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+
+    useEffect(() => {
+        const loadOrders = async () => {
+            setLoading(true);
+            setError('');
+
+            try {
+                const result = await getOrders();
+                const rawOrders = result?.data || result || [];
+                setOrders(rawOrders.map(mapOrder));
+            } catch (loadError) {
+                console.error('Load orders error:', loadError);
+                setError(loadError.message || 'Failed to load orders.');
+                setOrders(storedOrders);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadOrders();
+    }, [storedOrders]);
 
     useEffect(() => {
         const tl = gsap.timeline();
@@ -27,8 +53,6 @@ const Tracking = () => {
         }).format(date);
     };
 
-    const formatPrice = (num) => `$${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-
     const getTimelineIndex = (status) => {
         switch(status) {
             case 'Pending': return 0;
@@ -38,6 +62,27 @@ const Tracking = () => {
             default: return 0;
         }
     };
+
+    if (loading) {
+        return (
+            <main className="tracking-page-wrapper">
+                <div className="tracking-container" style={{ textAlign: 'center', paddingTop: '80px' }}>
+                    <h2>Loading orders...</h2>
+                </div>
+            </main>
+        );
+    }
+
+    if (error && orders.length === 0) {
+        return (
+            <main className="tracking-page-wrapper">
+                <div className="tracking-container" style={{ textAlign: 'center', paddingTop: '80px' }}>
+                    <h2>Unable to load orders.</h2>
+                    <p style={{ color: '#86868b' }}>{error}</p>
+                </div>
+            </main>
+        );
+    }
 
     if (orders.length === 0) {
         return (

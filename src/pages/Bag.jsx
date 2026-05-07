@@ -3,13 +3,18 @@ import { Link, useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import useStore from '../store/useStore';
 import '../bag.css';
+import { formatPrice, parsePrice } from '../utils/storeData';
 
 const Bag = () => {
-    const { cart, removeFromCart, updateQuantity } = useStore();
+    const { cart, removeFromCart, updateQuantity, loadBasket } = useStore();
     const navigate = useNavigate();
 
 
     useEffect(() => {
+        loadBasket().catch((error) => {
+            console.error('Load basket error:', error);
+        });
+
         const tl = gsap.timeline();
         tl.fromTo(".bag-title", 
             { y: 20, opacity: 0 },
@@ -20,17 +25,15 @@ const Bag = () => {
             { y: 0, opacity: 1, duration: 0.6, stagger: 0.1, ease: "power2.out" },
             "-=0.4"
         );
-    }, []);
+    }, [loadBasket]);
 
 
     const subtotal = cart.reduce((sum, item) => {
-        const price = parseFloat(item.price.replace('$', '').replace(',', ''));
+        const price = parsePrice(item.priceValue ?? item.price);
         return sum + (price * item.quantity);
     }, 0);
     const shipping = subtotal > 0 ? 0 : 0;
     const total = subtotal + shipping;
-
-    const formatPrice = (num) => `$${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
     if (cart.length === 0) {
         return (
@@ -67,7 +70,7 @@ const Bag = () => {
                                 <div className="cart-item-details">
                                     <div className="cart-item-header">
                                         <h3 className="cart-item-name">{item.name}</h3>
-                                        <div className="cart-item-price">{item.price}</div>
+                                        <div className="cart-item-price">{formatPrice(item.priceValue ?? item.price)}</div>
                                     </div>
                                     <div className="cart-item-specs">
                                         {item.storage && <span>{item.storage}</span>}
@@ -78,23 +81,39 @@ const Bag = () => {
                                         <div className="quantity-selector">
                                             <button 
                                                 className="btn-qty" 
-                                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                                onClick={async () => {
+                                                    try {
+                                                        await updateQuantity(item.id, item.quantity - 1);
+                                                    } catch (error) {
+                                                        console.error('Update quantity error:', error);
+                                                    }
+                                                }}
                                             >
                                                 <i className="fa-solid fa-minus" style={{ fontSize: '10px' }}></i>
                                             </button>
                                             <span className="qty-number">{item.quantity}</span>
                                             <button 
                                                 className="btn-qty" 
-                                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                onClick={async () => {
+                                                    try {
+                                                        await updateQuantity(item.id, item.quantity + 1);
+                                                    } catch (error) {
+                                                        console.error('Update quantity error:', error);
+                                                    }
+                                                }}
                                             >
                                                 <i className="fa-solid fa-plus" style={{ fontSize: '10px' }}></i>
                                             </button>
                                         </div>
                                         <button 
                                             className="btn-remove"
-                                            onClick={() => {
+                                            onClick={async () => {
                                                 if (window.confirm("Are you sure you want to remove this item?")) {
-                                                    removeFromCart(item.id);
+                                                    try {
+                                                        await removeFromCart(item.id);
+                                                    } catch (error) {
+                                                        console.error('Remove from cart error:', error);
+                                                    }
                                                 }
                                             }}
                                         >

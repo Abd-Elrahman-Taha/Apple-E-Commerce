@@ -1,20 +1,37 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { storeProducts } from '../data/storeProducts';
+import { getCategories, getProducts } from '../api/products';
 import CategoryBar from '../components/store/CategoryBar';
 import FilterPanel from '../components/store/FilterPanel';
 import ProductsGrid from '../components/store/ProductsGrid';
 import '../store.css';
+import { mapProduct, normalizeCategoryName } from '../utils/storeData';
 
 gsap.registerPlugin(ScrollTrigger);
 
+const defaultCategories = [
+    { id: 'All', label: 'All Models' },
+    { id: 'iPhone', label: 'iPhone' },
+    { id: 'Mac', label: 'Mac' },
+    { id: 'iPad', label: 'iPad' },
+    { id: 'Watch', label: 'Apple Watch' },
+    { id: 'AirPods', label: 'AirPods' }
+];
+
 const Store = () => {
-    
-    const [activeCategory, setActiveCategory] = useState('All');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const initialCategory = normalizeCategoryName(searchParams.get('category')) || 'All';
+
+    const [activeCategory, setActiveCategory] = useState(initialCategory);
     const [searchQuery, setSearchQuery] = useState('');
     const [activeFilters, setActiveFilters] = useState({});
     const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+    const [products, setProducts] = useState([]);
+    const [categories, setCategories] = useState(defaultCategories);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
     
     useEffect(() => {
@@ -39,9 +56,57 @@ const Store = () => {
         };
     }, []);
 
+    useEffect(() => {
+        const categoryFromQuery = normalizeCategoryName(searchParams.get('category')) || 'All';
+        setActiveCategory(categoryFromQuery);
+    }, [searchParams]);
+
+    useEffect(() => {
+        const loadStoreData = async () => {
+            setLoading(true);
+            setError('');
+
+            try {
+                const [productsResult, categoriesResult] = await Promise.all([
+                    getProducts(),
+                    getCategories()
+                ]);
+
+                const rawProducts = productsResult?.data || productsResult || [];
+                setProducts(rawProducts.map(mapProduct));
+
+                const rawCategories = categoriesResult?.data || categoriesResult || [];
+                if (Array.isArray(rawCategories) && rawCategories.length > 0) {
+                    const mappedCategories = rawCategories.map(category => {
+                        const categoryId = normalizeCategoryName(category.name || category.categoryName || category.title || category);
+
+                        return {
+                            id: categoryId,
+                            label: category.label || category.name || category.categoryName || categoryId
+                        };
+                    }).filter(category => category.id);
+
+                    setCategories([
+                        defaultCategories[0],
+                        ...mappedCategories.filter((category, index, array) =>
+                            array.findIndex(item => item.id === category.id) === index
+                        )
+                    ]);
+                }
+            } catch (loadError) {
+                console.error('Store loading error:', loadError);
+                setError(loadError.message || 'Failed to load store data.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadStoreData();
+    }, []);
+
     
     const filteredProducts = useMemo(() => {
-        return storeProducts.filter(product => {
+        return products.filter(product => {
             
             if (searchQuery) {
                 const searchStr = searchQuery.toLowerCase();
@@ -69,7 +134,7 @@ const Store = () => {
 
             return true;
         });
-    }, [searchQuery, activeCategory, activeFilters]);
+    }, [products, searchQuery, activeCategory, activeFilters]);
 
     
     const handleCategoryChange = (category) => {
@@ -77,6 +142,7 @@ const Store = () => {
             setActiveCategory(category);
             setActiveFilters({}); 
             setSearchQuery(''); 
+            setSearchParams(category === 'All' ? {} : { category });
         }
     };
 
@@ -133,6 +199,7 @@ const Store = () => {
                     <CategoryBar 
                         activeCategory={activeCategory} 
                         onSelectCategory={handleCategoryChange} 
+                        categories={categories}
                     />
                 </div>
             </section>
@@ -168,7 +235,18 @@ const Store = () => {
 
                         {}
                         <div className={`store-products-col ${activeCategory === 'All' ? 'full-width' : ''}`}>
-                            <ProductsGrid products={filteredProducts} />
+                            {loading ? (
+                                <div className="no-results-state">
+                                    <h3>Loading products...</h3>
+                                </div>
+                            ) : error ? (
+                                <div className="no-results-state">
+                                    <h3>Unable to load products</h3>
+                                    <p>{error}</p>
+                                </div>
+                            ) : (
+                                <ProductsGrid products={filteredProducts} />
+                            )}
                         </div>
                     </div>
                 </div>

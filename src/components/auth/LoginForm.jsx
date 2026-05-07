@@ -1,6 +1,9 @@
 import React, { useState, forwardRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getCurrentUser, login } from '../../api/auth';
 
 const LoginForm = forwardRef(({ onSwitch }, ref) => {
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -11,22 +14,36 @@ const LoginForm = forwardRef(({ onSwitch }, ref) => {
         setLoading(true);
         setError('');
 
-        try {
-            const response = await fetch('http://localhost:3000/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: email, password }),
-            });
+        if (password.length < 6) {
+            setError('Password must be at least 6 characters');
+            setLoading(false);
+            return;
+        }
 
-            const data = await response.json();
-            if (data.success) {
-                window.location.href = '/store';
-            } else {
-                setError(data.message || 'Invalid credentials');
+        try {
+            const result = await login(email, password);
+            const token = result?.data?.token || result?.token || result?.tokenString;
+
+            if (!token) {
+                setError('Login succeeded but no token was returned');
+                return;
             }
+
+            localStorage.setItem('token', token);
+
+            try {
+                const user = await getCurrentUser();
+                if (user) {
+                    localStorage.setItem('user', JSON.stringify(user));
+                }
+            } catch (userError) {
+                console.error('Get current user error:', userError);
+            }
+
+            navigate('/store');
         } catch (err) {
             console.error('Login error:', err);
-            setError('An error occurred. Please try again.');
+            setError(err.message || 'An error occurred. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -65,6 +82,7 @@ const LoginForm = forwardRef(({ onSwitch }, ref) => {
                             placeholder="Enter your password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            minLength="6"
                             required
                             autoComplete="current-password"
                         />

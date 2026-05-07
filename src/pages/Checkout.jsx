@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import useStore from '../store/useStore';
 import '../checkout.css';
+import { formatPrice, parsePrice } from '../utils/storeData';
 
 const Checkout = () => {
-    const { cart, placeOrder } = useStore();
+    const { cart, placeOrder, loadBasket } = useStore();
     const navigate = useNavigate();
 
-    const [paymentMethod, setPaymentMethod] = useState('card');
+    const [paymentMethod, setPaymentMethod] = useState('cod');
     const [formData, setFormData] = useState({
         fullName: '',
         phone: '',
@@ -18,29 +19,40 @@ const Checkout = () => {
         cvv: ''
     });
     const [errors, setErrors] = useState({});
+    const [submitError, setSubmitError] = useState('');
+    const [submitting, setSubmitting] = useState(false);
 
 
     useEffect(() => {
-        if (cart.length === 0) {
-            navigate('/bag');
-            return;
-        }
+        loadBasket().catch((error) => {
+            console.error('Load basket error:', error);
+        });
 
         const tl = gsap.timeline();
         tl.fromTo(".reveal-checkout",
             { y: 20, opacity: 0 },
             { y: 0, opacity: 1, duration: 0.6, stagger: 0.1, ease: "power2.out" }
         );
+    }, [loadBasket]);
+
+    useEffect(() => {
+        if (!localStorage.getItem('token')) {
+            navigate('/login');
+            return;
+        }
+
+        if (cart.length === 0) {
+            navigate('/bag');
+        }
     }, [cart.length, navigate]);
 
 
     const subtotal = cart.reduce((sum, item) => {
-        const price = parseFloat(item.price.replace('$', '').replace(',', ''));
+        const price = parsePrice(item.priceValue ?? item.price);
         return sum + (price * item.quantity);
     }, 0);
     const shipping = 0;
     const total = subtotal + shipping;
-    const formatPrice = (num) => `$${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -54,6 +66,7 @@ const Checkout = () => {
         if (!formData.fullName.trim()) newErrors.fullName = 'Full Name is required';
         if (!formData.phone.trim()) newErrors.phone = 'Phone Number is required';
         if (!formData.address.trim()) newErrors.address = 'Address is required';
+        if (paymentMethod !== 'cod') newErrors.paymentMethod = 'Only cash on delivery is available right now';
         
         if (paymentMethod === 'card') {
             if (!formData.cardNumber.trim()) newErrors.cardNumber = 'Card Number is required';
@@ -65,22 +78,32 @@ const Checkout = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setSubmitError('');
         
         if (validateForm()) {
-            const orderDetails = {
-                total,
-                paymentMethod,
-                deliveryInfo: {
-                    fullName: formData.fullName,
-                    phone: formData.phone,
-                    address: formData.address
-                }
-            };
-            
-            placeOrder(orderDetails);
-            navigate('/tracking');
+            setSubmitting(true);
+
+            try {
+                const orderDetails = {
+                    total,
+                    paymentMethod: 'cod',
+                    deliveryInfo: {
+                        fullName: formData.fullName,
+                        phone: formData.phone,
+                        address: formData.address
+                    }
+                };
+                
+                await placeOrder(orderDetails);
+                navigate('/tracking');
+            } catch (error) {
+                console.error('Checkout error:', error);
+                setSubmitError(error.message || 'Failed to place order.');
+            } finally {
+                setSubmitting(false);
+            }
         }
     };
 
@@ -201,6 +224,9 @@ const Checkout = () => {
                                     </div>
                                 </div>
                             )}
+
+                            {errors.paymentMethod && <div className="error-text">{errors.paymentMethod}</div>}
+                            {submitError && <div className="error-text">{submitError}</div>}
                         </section>
                     </div>
 
@@ -216,7 +242,7 @@ const Checkout = () => {
                                         <div className="mini-item-info">
                                             <h4 className="mini-item-name">{item.name}</h4>
                                             <div className="mini-item-qty">Qty: {item.quantity}</div>
-                                            <div className="mini-item-price">{item.price}</div>
+                                            <div className="mini-item-price">{formatPrice(item.priceValue ?? item.price)}</div>
                                         </div>
                                     </div>
                                 ))}
@@ -233,8 +259,8 @@ const Checkout = () => {
                                 <span>Total</span>
                                 <span>{formatPrice(total)}</span>
                             </div>
-                            <button type="submit" className="btn-checkout">
-                                Place Order
+                            <button type="submit" className="btn-checkout" disabled={submitting}>
+                                {submitting ? 'Placing Order...' : 'Place Order'}
                             </button>
                         </div>
                     </div>

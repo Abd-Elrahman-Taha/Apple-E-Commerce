@@ -21,10 +21,14 @@ export const ProductCard = ({ product }) => {
     const { addToCart } = useStore();
     const [added, setAdded] = useState(false);
 
-    const handleAddToCart = () => {
-        addToCart(product);
-        setAdded(true);
-        
+    const handleAddToCart = async () => {
+        try {
+            await addToCart(product);
+            setAdded(true);
+        } catch (error) {
+            console.error('Add to cart error:', error);
+            return;
+        }
 
         if (cardRef.current) {
             const btn = cardRef.current.querySelector('.btn-buy');

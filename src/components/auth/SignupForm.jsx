@@ -1,6 +1,9 @@
 import React, { useState, forwardRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getCurrentUser, register } from '../../api/auth';
 
 const SignupForm = forwardRef(({ onSwitch }, ref) => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -28,30 +31,37 @@ const SignupForm = forwardRef(({ onSwitch }, ref) => {
             return;
         }
 
+        if (formData.password.length < 6) {
+            setError('Password must be at least 6 characters');
+            return;
+        }
+
         setLoading(true);
 
         try {
-            const response = await fetch('http://localhost:3000/api/signup', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: formData.name,
-                    email: formData.email,
-                    age: formData.age,
-                    gender: formData.gender,
-                    password: formData.password,
-                }),
-            });
+            const result = await register(formData.name, formData.email, formData.password);
+            const token = result?.data?.token || result?.token || result?.tokenString;
 
-            const data = await response.json();
-            if (data.success) {
-                onSwitch(); 
-            } else {
-                setError(data.message || 'Signup failed');
+            if (token) {
+                localStorage.setItem('token', token);
+
+                try {
+                    const user = await getCurrentUser();
+                    if (user) {
+                        localStorage.setItem('user', JSON.stringify(user));
+                    }
+                } catch (userError) {
+                    console.error('Get current user error:', userError);
+                }
+
+                navigate('/store');
+                return;
             }
+
+            onSwitch();
         } catch (err) {
             console.error('Signup error:', err);
-            setError('An error occurred. Please try again.');
+            setError(err.message || 'An error occurred. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -141,6 +151,7 @@ const SignupForm = forwardRef(({ onSwitch }, ref) => {
                                 placeholder="Create a password"
                                 value={formData.password}
                                 onChange={handleChange}
+                                minLength="6"
                                 required
                                 autoComplete="new-password"
                             />
@@ -155,6 +166,7 @@ const SignupForm = forwardRef(({ onSwitch }, ref) => {
                                 placeholder="Confirm password"
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
+                                minLength="6"
                                 required
                                 autoComplete="new-password"
                             />

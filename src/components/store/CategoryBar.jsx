@@ -1,6 +1,6 @@
 import React from 'react';
 
-const categories = [
+const defaultCategories = [
     { id: 'All', label: 'All Models' },
     { id: 'iPhone', label: 'iPhone' },
     { id: 'Mac', label: 'Mac' },
@@ -9,7 +9,7 @@ const categories = [
     { id: 'AirPods', label: 'AirPods' }
 ];
 
-const CategoryBar = ({ activeCategory, onSelectCategory }) => {
+const CategoryBar = ({ activeCategory, onSelectCategory, categories = defaultCategories }) => {
     return (
         <div className="store-category-bar">
             <div className="category-scroll-container">

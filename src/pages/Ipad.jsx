@@ -291,7 +291,7 @@ const Ipad = () => {
                             <h1 className="hero-title reveal-hero">iPad Pro</h1>
                             <p className="hero-subtitle reveal-hero">Thinpossible.</p>
                             <div className="hero-buttons reveal-hero">
-                                <Link to="/store" className="btn btn-apple btn-apple-primary">Buy</Link>
+                                <Link to="/store?category=iPad" className="btn btn-apple btn-apple-primary">Buy</Link>
                                 <a href="#section-performance" className="btn btn-apple text-white btn-apple-link">Learn more <i className="bi bi-chevron-down"></i></a>
                             </div>
                         </div>
@@ -367,7 +367,7 @@ const Ipad = () => {
                             Experience the magic of iPad.
                         </p>
                         <div className="mt-5 gsap-reveal from-bottom">
-                            <Link to="/store" className="btn btn-apple btn-apple-primary px-5 py-3 fs-5">Buy iPad Pro</Link>
+                            <Link to="/store?category=iPad" className="btn btn-apple btn-apple-primary px-5 py-3 fs-5">Buy iPad Pro</Link>
                         </div>
                     </div>
                 </section>

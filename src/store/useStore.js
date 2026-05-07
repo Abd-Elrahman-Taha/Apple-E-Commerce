@@ -1,60 +1,164 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { getBasket, saveBasket, deleteBasket } from '../api/basket';
+import { createOrder } from '../api/orders';
+import { mapBasketItem, mapOrder, parsePrice } from '../utils/storeData';
+
+const BASKET_ID_KEY = 'basketId';
+
+const createBasketId = () => `basket-${crypto.randomUUID()}`;
+
+const ensureBasketId = () => {
+    const existingBasketId = localStorage.getItem(BASKET_ID_KEY);
+
+    if (existingBasketId) {
+        return existingBasketId;
+    }
+
+    const newBasketId = createBasketId();
+    localStorage.setItem(BASKET_ID_KEY, newBasketId);
+    return newBasketId;
+};
+
+const buildBasketPayload = (cart, basketId) => ({
+    id: basketId,
+    items: cart.map(item => ({
+        id: item.id,
+        name: item.name,
+        pictureUrl: item.pictureUrl || item.image || '',
+        image: item.image || item.pictureUrl || '',
+        price: parsePrice(item.priceValue ?? item.price),
+        quantity: item.quantity,
+        category: item.category || item.categoryName || ''
+    }))
+});
 
 const useStore = create(
     persist(
         (set, get) => ({
             cart: [],
             orders: [],
+            basketLoaded: false,
             
-            addToCart: (product) => {
+            syncBasket: async (cartOverride) => {
+                const cart = cartOverride || get().cart;
+                const basketId = ensureBasketId();
+                const savedBasket = await saveBasket(buildBasketPayload(cart, basketId));
+                const basketItems = (savedBasket?.items || cart).map(mapBasketItem);
+
+                set({
+                    cart: basketItems,
+                    basketLoaded: true
+                });
+
+                return savedBasket;
+            },
+
+            loadBasket: async () => {
+                const basketId = localStorage.getItem(BASKET_ID_KEY);
+
+                if (!basketId) {
+                    set({ basketLoaded: true });
+                    return null;
+                }
+
+                try {
+                    const basket = await getBasket(basketId);
+                    const cart = (basket?.items || []).map(mapBasketItem);
+
+                    set({
+                        cart,
+                        basketLoaded: true
+                    });
+
+                    return basket;
+                } catch (error) {
+                    set({ basketLoaded: true });
+                    throw error;
+                }
+            },
+
+            addToCart: async (product) => {
                 const { cart } = get();
-                const existingItemIndex = cart.findIndex(item => item.id === product.id);
+                const normalizedProduct = mapBasketItem(product);
+                const existingItemIndex = cart.findIndex(item => item.id === normalizedProduct.id);
+                let nextCart;
                 
                 if (existingItemIndex >= 0) {
-                    const newCart = [...cart];
-                    newCart[existingItemIndex].quantity += 1;
-                    set({ cart: newCart });
+                    nextCart = [...cart];
+                    nextCart[existingItemIndex].quantity += 1;
                 } else {
-                    set({ cart: [...cart, { ...product, quantity: 1 }] });
+                    nextCart = [...cart, { ...normalizedProduct, quantity: 1 }];
                 }
+
+                set({ cart: nextCart });
+                await get().syncBasket(nextCart);
             },
             
-            removeFromCart: (productId) => {
-                set({ cart: get().cart.filter(item => item.id !== productId) });
+            removeFromCart: async (productId) => {
+                const nextCart = get().cart.filter(item => item.id !== productId);
+                set({ cart: nextCart });
+                await get().syncBasket(nextCart);
             },
             
-            updateQuantity: (productId, quantity) => {
+            updateQuantity: async (productId, quantity) => {
                 if (quantity <= 0) {
-                    get().removeFromCart(productId);
+                    await get().removeFromCart(productId);
                     return;
                 }
-                set({
-                    cart: get().cart.map(item => 
+
+                const nextCart = get().cart.map(item => 
                         item.id === productId ? { ...item, quantity } : item
-                    )
-                });
+                    );
+
+                set({ cart: nextCart });
+                await get().syncBasket(nextCart);
             },
             
-            clearCart: () => set({ cart: [] }),
+            clearCart: async () => {
+                const basketId = localStorage.getItem(BASKET_ID_KEY);
+
+                if (basketId) {
+                    try {
+                        await deleteBasket(basketId);
+                    } catch (error) {
+                        console.error('Failed to clear basket:', error);
+                    }
+                }
+
+                localStorage.removeItem(BASKET_ID_KEY);
+                set({ cart: [] });
+            },
             
-            placeOrder: (orderDetails) => {
-                const newOrder = {
-                    id: 'ORD-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
-                    date: new Date().toISOString(),
-                    items: get().cart,
-                    total: orderDetails.total,
-                    paymentMethod: orderDetails.paymentMethod,
+            placeOrder: async (orderDetails) => {
+                const basketId = localStorage.getItem(BASKET_ID_KEY) || ensureBasketId();
+                const createdOrder = await createOrder({
+                    basketId,
                     deliveryInfo: orderDetails.deliveryInfo,
-                    status: 'Pending'
-                };
-                
-                set({ 
-                    orders: [newOrder, ...get().orders],
+                    paymentMethod: orderDetails.paymentMethod
+                });
+                const mappedOrder = mapOrder({
+                    ...createdOrder,
+                    items: createdOrder?.items?.length ? createdOrder.items : get().cart,
+                    total: createdOrder?.total ?? orderDetails.total,
+                    paymentMethod: createdOrder?.paymentMethod || orderDetails.paymentMethod,
+                    deliveryInfo: createdOrder?.deliveryInfo || orderDetails.deliveryInfo
+                });
+
+                set({
+                    orders: [mappedOrder, ...get().orders],
                     cart: []
                 });
-                
-                return newOrder.id;
+
+                try {
+                    await deleteBasket(basketId);
+                } catch (error) {
+                    console.error('Failed to delete basket after checkout:', error);
+                }
+
+                localStorage.removeItem(BASKET_ID_KEY);
+
+                return mappedOrder.id;
             }
         }),
         {

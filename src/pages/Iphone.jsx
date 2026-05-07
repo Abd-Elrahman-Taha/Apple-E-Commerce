@@ -289,7 +289,7 @@ const Iphone = () => {
                             <h1 className="hero-title reveal-hero">iPhone 17 Pro Max</h1>
                             <h2 className="hero-subtitle reveal-hero">Designed to push boundaries.</h2>
                             <div className="hero-buttons mt-5 reveal-hero">
-                                <Link to="/store" className="btn btn-apple-primary">Buy</Link>
+                                <Link to="/store?category=iPhone" className="btn btn-apple-primary">Buy</Link>
                                 <a href="#section-disassembly"
                                     className="btn btn-apple-link ms-4 text-white text-decoration-none fw-bold">Learn more <i
                                         className="bi bi-chevron-down fs-6"></i></a>
@@ -350,7 +350,7 @@ const Iphone = () => {
                             Experience the raw power.
                         </p>
                         <div className="mt-5 reveal-text">
-                            <Link to="/store" className="btn btn-apple-primary px-5 py-3 fs-5">Buy iPhone Pro</Link>
+                            <Link to="/store?category=iPhone" className="btn btn-apple-primary px-5 py-3 fs-5">Buy iPhone Pro</Link>
                         </div>
                     </div>
                 </section>

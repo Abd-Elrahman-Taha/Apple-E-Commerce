@@ -341,7 +341,7 @@ const Mac = () => {
                             <h1 className="hero-title reveal-hero">MacBook Pro</h1>
                             <p className="hero-subtitle reveal-hero">Mind-blowing. Head-turning.</p>
                             <div className="hero-buttons reveal-hero">
-                                <Link to="/store" className="btn btn-apple btn-apple-primary">Buy</Link>
+                                <Link to="/store?category=Mac" className="btn btn-apple btn-apple-primary">Buy</Link>
                                 <a href="#section-performance" className="btn btn-apple btn-apple-link text-white">Learn more <i className="bi bi-chevron-down"></i></a>
                             </div>
                         </div>
@@ -412,7 +412,7 @@ const Mac = () => {
                             Unleash the full potential of Apple Silicon.
                         </p>
                         <div className="mt-5 gsap-reveal from-bottom">
-                            <Link to="/store" className="btn btn-apple btn-apple-primary px-5 py-3 fs-5">Buy MacBook Pro</Link>
+                            <Link to="/store?category=Mac" className="btn btn-apple btn-apple-primary px-5 py-3 fs-5">Buy MacBook Pro</Link>
                         </div>
                     </div>
                 </section>

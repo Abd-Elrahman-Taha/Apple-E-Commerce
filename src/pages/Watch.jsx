@@ -275,7 +275,7 @@ const Watch = () => {
                             <h1 className="hero-title reveal-hero">Apple Watch</h1>
                             <h2 className="hero-subtitle reveal-hero">Next level adventure.</h2>
                             <div className="hero-buttons mt-4 reveal-hero">
-                                <Link to="/store" className="btn btn-apple-primary">Buy</Link>
+                                <Link to="/store?category=Watch" className="btn btn-apple-primary">Buy</Link>
                                 <a href="#section-health" className="btn btn-apple-link ms-4">Learn more <i className="bi bi-chevron-down fs-6"></i></a>
                             </div>
                         </div>
@@ -330,7 +330,7 @@ const Watch = () => {
                     <div className="container px-4 px-md-5">
                         <h2 className="hero-title reveal-text" style={{ fontSize: 'clamp(3rem, 6vw, 5rem)' }}>Adventure awaits.</h2>
                         <div className="hero-buttons mt-5 reveal-text">
-                            <Link to="/store" className="btn btn-apple-primary px-5 py-3 fs-5">Buy Apple Watch</Link>
+                            <Link to="/store?category=Watch" className="btn btn-apple-primary px-5 py-3 fs-5">Buy Apple Watch</Link>
                         </div>
                     </div>
                 </section>
