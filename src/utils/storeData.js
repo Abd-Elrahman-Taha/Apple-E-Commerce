@@ -1,10 +1,33 @@
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '');
+
+export const resolveImageUrl = (value) => {
+    if (!value) return '';
+
+    const url = `${value}`.trim();
+
+    if (
+        url.startsWith('http://') ||
+        url.startsWith('https://') ||
+        url.startsWith('data:') ||
+        url.startsWith('blob:')
+    ) {
+        return url;
+    }
+
+    if (!API_BASE_URL) {
+        return url;
+    }
+
+    return `${API_BASE_URL}/${url.replace(/^\/+/, '')}`;
+};
+
 export const normalizeCategoryName = (value) => {
     const category = `${value || ''}`.trim().toLowerCase();
 
     if (category === 'iphone') return 'iPhone';
     if (category === 'ipad') return 'iPad';
     if (category === 'mac') return 'Mac';
-    if (category === 'watch' || category === 'apple watch') return 'Watch';
+    if (category === 'watch' || category === 'apple watch') return 'Apple Watch';
     if (category === 'airpods' || category === 'air pods') return 'AirPods';
 
     return value || '';
@@ -31,13 +54,14 @@ export const formatPrice = (value) => `$${parsePrice(value).toLocaleString('en-U
 export const mapProduct = (product) => {
     const priceValue = parsePrice(product.price ?? product.unitPrice ?? product.productPrice);
     const categoryName = normalizeCategoryName(product.category || product.categoryName || '');
+    const imageUrl = resolveImageUrl(product.image || product.pictureUrl || '');
 
     return {
         ...product,
         id: product.id,
         name: product.name,
-        image: product.image || product.pictureUrl || '',
-        pictureUrl: product.pictureUrl || product.image || '',
+        image: imageUrl,
+        pictureUrl: imageUrl,
         desc: product.desc || product.description || '',
         description: product.description || product.desc || '',
         category: categoryName,

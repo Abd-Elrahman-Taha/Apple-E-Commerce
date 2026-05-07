@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import useStore from '../../store/useStore';
+import { resolveImageUrl } from '../../utils/storeData';
 
 const generateStarHTML = (rating) => {
     const fullStars = Math.floor(rating);
@@ -77,7 +78,7 @@ export const ProductCard = ({ product }) => {
         >
             {product.badge && <div className="badge-tag">{product.badge}</div>}
             <div className="card-image-wrap">
-                <img src={product.image} alt={product.name} />
+                <img src={resolveImageUrl(product.image || product.pictureUrl)} alt={product.name} />
             </div>
             <div className="card-info">
                 <h3 className="product-name">{product.name}</h3>
