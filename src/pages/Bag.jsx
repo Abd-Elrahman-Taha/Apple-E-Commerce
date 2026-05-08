@@ -2,10 +2,12 @@ import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import useStore from '../store/useStore';
+import useAuthStore from '../store/useAuthStore';
 import '../bag.css';
 
 const Bag = () => {
     const { cart, removeFromCart, updateQuantity } = useStore();
+    const token = useAuthStore((state) => state.token);
     const navigate = useNavigate();
 
 
@@ -120,7 +122,13 @@ const Bag = () => {
                         </div>
                         <button 
                             className="btn-checkout" 
-                            onClick={() => navigate('/checkout')}
+                            onClick={() => {
+                                if (!token) {
+                                    navigate('/login?redirect=/checkout');
+                                    return;
+                                }
+                                navigate('/checkout');
+                            }}
                         >
                             Proceed to Checkout
                         </button>

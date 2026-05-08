@@ -1,13 +1,20 @@
 import React, { useState, forwardRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../../api/api';
+import useAuthStore from '../../store/useAuthStore';
 
 const LoginForm = forwardRef(({ onSwitch }, ref) => {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const login = useAuthStore((state) => state.login);
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+
+    const redirectPath = searchParams.get('redirect') || '/store';
+    const sessionExpired = searchParams.get('expired') === '1';
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -21,14 +28,30 @@ const LoginForm = forwardRef(({ onSwitch }, ref) => {
             });
 
             const data = response.data;
-            if (data.success) {
-                navigate('/store');
+
+            if (data.success !== false) {
+                const token = data.token || data.accessToken || data.data?.token || data.data?.accessToken;
+                const userData = data.user || data.data?.user || data.data || {
+                    name: data.name || email.split('@')[0],
+                    email: data.email || email,
+                    avatar: data.avatar || data.profileImage || null,
+                };
+
+                if (token) {
+                    login(userData, token);
+                } else {
+                    login(userData, 'session-active');
+                }
+
+                navigate(redirectPath, { replace: true });
             } else {
                 setError(data.message || 'Invalid credentials');
             }
         } catch (err) {
-            console.error('Login error:', err);
-            setError(err.response?.data?.message || 'An error occurred. Please try again.');
+            const msg = err.response?.data?.message
+                || err.response?.data?.errors?.[0]
+                || 'An error occurred. Please try again.';
+            setError(msg);
         } finally {
             setLoading(false);
         }
@@ -44,6 +67,12 @@ const LoginForm = forwardRef(({ onSwitch }, ref) => {
                     <h2 className="auth-title">Welcome back</h2>
                     <p className="auth-subtitle">Sign in to your Apple account</p>
                 </div>
+
+                {sessionExpired && (
+                    <div className="auth-error" style={{ background: 'rgba(255, 165, 0, 0.12)', borderColor: 'rgba(255, 165, 0, 0.3)', color: '#ffb347' }}>
+                        Your session has expired. Please sign in again.
+                    </div>
+                )}
 
                 <form onSubmit={handleLogin} className="auth-form">
                     <div className="auth-field">
@@ -105,3 +134,4 @@ const LoginForm = forwardRef(({ onSwitch }, ref) => {
 LoginForm.displayName = 'LoginForm';
 
 export default LoginForm;
+

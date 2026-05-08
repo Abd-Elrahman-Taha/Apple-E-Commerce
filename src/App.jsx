@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Navbar from './components/Navbar';
 import ErrorBoundary from './components/ErrorBoundary';
+import ProtectedRoute from './components/ProtectedRoute';
 
 import Home from './pages/Home';
 import Store from './pages/Store';
@@ -16,6 +17,7 @@ import Login from './pages/Login';
 import Bag from './pages/Bag';
 import Checkout from './pages/Checkout';
 import Tracking from './pages/Tracking';
+import Profile from './pages/Profile';
 
 import './style.css'; 
 
@@ -54,11 +56,16 @@ const App = () => {
         <Route path="/airpods" element={<Airpods />} />
         <Route path="/login" element={<Login />} />
         <Route path="/bag" element={<Bag />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/tracking" element={<Tracking />} />
+
+        <Route element={<ProtectedRoute />}>
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/tracking" element={<Tracking />} />
+          <Route path="/profile" element={<Profile />} />
+        </Route>
       </Routes>
     </ErrorBoundary>
   );
 };
 
 export default App;
+

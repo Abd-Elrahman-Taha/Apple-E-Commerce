@@ -11,6 +11,7 @@ const SignupForm = forwardRef(({ onSwitch }, ref) => {
         confirmPassword: '',
     });
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
@@ -29,6 +30,11 @@ const SignupForm = forwardRef(({ onSwitch }, ref) => {
             return;
         }
 
+        if (formData.password.length < 6) {
+            setError('Password must be at least 6 characters');
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -41,14 +47,19 @@ const SignupForm = forwardRef(({ onSwitch }, ref) => {
             });
 
             const data = response.data;
-            if (data.success) {
-                onSwitch(); 
+            if (data.success !== false) {
+                setSuccess(true);
+                setTimeout(() => {
+                    onSwitch();
+                }, 2000);
             } else {
                 setError(data.message || 'Signup failed');
             }
         } catch (err) {
-            console.error('Signup error:', err);
-            setError(err.response?.data?.message || 'An error occurred. Please try again.');
+            const msg = err.response?.data?.message
+                || err.response?.data?.errors?.[0]
+                || 'An error occurred. Please try again.';
+            setError(msg);
         } finally {
             setLoading(false);
         }
@@ -157,6 +168,12 @@ const SignupForm = forwardRef(({ onSwitch }, ref) => {
                             />
                         </div>
                     </div>
+
+                    {success && (
+                        <div className="auth-error" style={{ background: 'rgba(52, 199, 89, 0.12)', borderColor: 'rgba(52, 199, 89, 0.3)', color: '#34c759' }}>
+                            Account created successfully! Redirecting to sign in...
+                        </div>
+                    )}
 
                     {error && <div className="auth-error">{error}</div>}
 

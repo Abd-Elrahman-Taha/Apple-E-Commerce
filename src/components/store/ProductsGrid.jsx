@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import gsap from 'gsap';
 import useStore from '../../store/useStore';
+import useAuthStore from '../../store/useAuthStore';
 
 const generateStarHTML = (rating) => {
     const fullStars = Math.floor(rating);
@@ -19,9 +21,17 @@ const generateStarHTML = (rating) => {
 export const ProductCard = ({ product }) => {
     const cardRef = useRef(null);
     const { addToCart } = useStore();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const token = useAuthStore((state) => state.token);
     const [added, setAdded] = useState(false);
 
     const handleAddToCart = () => {
+        if (!token) {
+            navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`);
+            return;
+        }
+
         addToCart(product);
         setAdded(true);
         
