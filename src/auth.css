@@ -4,12 +4,14 @@
 .auth-section {
     position: relative;
     width: 100vw;
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
     background: #000000;
+    padding: 20px 0;
 }
 
 
@@ -99,7 +101,7 @@
         0 8px 32px rgba(0, 0, 0, 0.4),
         0 0 0 1px rgba(255, 255, 255, 0.05) inset,
         0 0 80px rgba(124, 106, 255, 0.05);
-    overflow: hidden;
+    overflow: visible;
     will-change: transform, opacity;
 }
 
@@ -358,16 +360,24 @@ input{
 }
 
 @media (max-width: 768px) {
+    .auth-section {
+        align-items: flex-start;
+        padding: 40px 0 30px;
+    }
+
     .auth-glass {
         width: 95%;
         max-width: 420px;
         min-height: auto;
         border-radius: 24px;
+        overflow: visible;
+        margin: auto;
     }
 
     .auth-glass-inner {
         padding: 32px 24px;
         justify-content: center;
+        min-height: auto;
     }
 
     .auth-forms-wrapper {
@@ -379,6 +389,10 @@ input{
         gap: 18px;
     }
 
+    .auth-form-inner {
+        gap: 20px;
+    }
+
     .auth-model-wrapper {
         transform: translateX(0) translateY(-15%);
         opacity: 0.3;
@@ -386,6 +400,24 @@ input{
 
     .auth-title {
         font-size: 1.6rem;
+    }
+
+    .auth-logo {
+        margin-bottom: 10px;
+    }
+
+    .auth-switch {
+        padding-top: 4px;
+        padding-bottom: 4px;
+    }
+
+    .auth-switch span {
+        font-size: 0.9rem;
+    }
+
+    .auth-switch-btn {
+        font-size: 0.9rem;
+        padding: 4px 8px;
     }
 
     .auth-orb-1 {
@@ -405,13 +437,29 @@ input{
 }
 
 @media (max-width: 480px) {
+    .auth-section {
+        padding: 30px 0 20px;
+    }
+
     .auth-glass {
         width: 96%;
         border-radius: 20px;
     }
 
     .auth-glass-inner {
-        padding: 28px 20px;
+        padding: 24px 18px;
+    }
+
+    .auth-form-inner {
+        gap: 16px;
+    }
+
+    .auth-form {
+        gap: 14px;
+    }
+
+    .auth-field-row {
+        gap: 14px;
     }
 
     .auth-field input,
@@ -423,6 +471,15 @@ input{
     .auth-submit-btn {
         padding: 13px;
         font-size: 0.95rem;
+    }
+
+    .auth-switch {
+        padding-top: 2px;
+    }
+
+    .auth-switch span,
+    .auth-switch-btn {
+        font-size: 0.88rem;
     }
 }
 
