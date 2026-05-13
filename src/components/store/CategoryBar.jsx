@@ -1,12 +1,12 @@
 import React from 'react';
 
 const categories = [
-    { id: 'All', label: 'All Models' },
-    { id: 'iPhone', label: 'iPhone' },
-    { id: 'Mac', label: 'Mac' },
-    { id: 'iPad', label: 'iPad' },
-    { id: 'Watch', label: 'Apple Watch' },
-    { id: 'AirPods', label: 'AirPods' }
+    { id: 'All', label: 'All Models', icon: 'fa-solid fa-grid-2' },
+    { id: 'iPhone', label: 'iPhone', icon: 'fa-solid fa-mobile-screen' },
+    { id: 'Mac', label: 'Mac', icon: 'fa-solid fa-laptop' },
+    { id: 'iPad', label: 'iPad', icon: 'fa-solid fa-tablet-screen-button' },
+    { id: 'Watch', label: 'Apple Watch', icon: 'fa-solid fa-clock' },
+    { id: 'AirPods', label: 'AirPods', icon: 'fa-solid fa-headphones' }
 ];
 
 const CategoryBar = ({ activeCategory, onSelectCategory }) => {
@@ -19,6 +19,7 @@ const CategoryBar = ({ activeCategory, onSelectCategory }) => {
                         className={`category-btn ${activeCategory === cat.id ? 'active' : ''}`}
                         onClick={() => onSelectCategory(cat.id)}
                     >
+                        <i className={`cat-icon ${cat.icon}`}></i>
                         {cat.label}
                     </button>
                 ))}

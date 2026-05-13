@@ -17,6 +17,7 @@ const Store = () => {
     const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [searchFocused, setSearchFocused] = useState(false);
 
     // Fetch products
     useEffect(() => {
@@ -124,7 +125,7 @@ const Store = () => {
                             </h2>
                         </div>
                         <div className="col-md-5 search-col reveal-elem">
-                            <div className="search-container">
+                            <div className={`search-container ${searchFocused ? 'focused' : ''}`}>
                                 <i className="fa-solid fa-magnifying-glass search-icon"></i>
                                 <input
                                     id='search'
@@ -133,6 +134,8 @@ const Store = () => {
                                     placeholder="Search products, categories..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
+                                    onFocus={() => setSearchFocused(true)}
+                                    onBlur={() => setSearchFocused(false)}
                                 />
                             </div>
                         </div>

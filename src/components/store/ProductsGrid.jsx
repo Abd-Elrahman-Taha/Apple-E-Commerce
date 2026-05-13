@@ -51,13 +51,16 @@ export const ProductCard = ({ product }) => {
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+
         const xPct = (x / rect.width - 0.5) * 2;
         const yPct = (y / rect.height - 0.5) * 2;
 
         gsap.to(card, {
-            rotationY: xPct * 8,
-            rotationX: -yPct * 8,
-            transformPerspective: 1000,
+            rotationY: xPct * 6,
+            rotationX: -yPct * 6,
+            transformPerspective: 1200,
             ease: "power2.out",
             duration: 0.4
         });
@@ -66,6 +69,8 @@ export const ProductCard = ({ product }) => {
     const handleMouseLeave = () => {
         const card = cardRef.current;
         if (!card) return;
+        card.style.setProperty('--mouse-x', '50%');
+        card.style.setProperty('--mouse-y', '50%');
         gsap.to(card, {
             rotationY: 0,
             rotationX: 0,
@@ -101,7 +106,7 @@ export const ProductCard = ({ product }) => {
                     <span className="rating-num">({product.rating})</span>
                 </div>
                 <div className="card-bottom">
-                    <div className="product-price">{product.price}</div>
+                    <div className="product-price">${product.price}</div>
                     <button 
                         className="btn-buy" 
                         onClick={handleAddToCart}
