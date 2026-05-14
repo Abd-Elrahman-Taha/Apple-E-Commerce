@@ -3,8 +3,6 @@ import adminApi from '../services/adminApi';
 import { extractListFromApiData } from '../utils/adminOrdersUtils';
 import { loadAdminOrdersFromApi } from '../services/adminOrdersService';
 
-let ordersFetchSeq = 0;
-
 const useAdminStore = create((set) => ({
     orders: [],
     products: [],
@@ -14,14 +12,11 @@ const useAdminStore = create((set) => ({
     errorProducts: null,
 
     fetchOrders: async () => {
-        const seq = ++ordersFetchSeq;
         set({ loadingOrders: true, errorOrders: null });
         try {
             const orders = await loadAdminOrdersFromApi();
-            if (seq !== ordersFetchSeq) return;
             set({ orders, loadingOrders: false, errorOrders: null });
         } catch (error) {
-            if (seq !== ordersFetchSeq) return;
             const message =
                 error?.response?.data?.message ||
                 error?.response?.data?.title ||

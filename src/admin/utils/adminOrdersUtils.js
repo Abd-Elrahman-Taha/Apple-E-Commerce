@@ -80,6 +80,10 @@ export function extractListFromApiData(data) {
         body.Result,
         body.content,
         body.Content,
+        body.rows,
+        body.Rows,
+        body.records,
+        body.Records,
     ];
 
     for (const chunk of nestedPaths) {
@@ -190,8 +194,42 @@ export function extractOrdersListWithFallback(data) {
     return Array.isArray(shallow) && shallow.length > 0 ? shallow : [];
 }
 
-/** @deprecated use extractListFromApiData — same implementation */
-export const extractOrdersListFromApiData = extractListFromApiData;
+/** When the envelope is unknown, pick the longest array of objects that looks like orders. */
+export function findBestOrderCandidateArray(root, maxDepth = 18) {
+    const candidates = [];
+
+    const walk = (node, depth) => {
+        if (node == null || depth > maxDepth) return;
+        if (typeof node !== 'object') return;
+
+        if (Array.isArray(node)) {
+            if (
+                node.length > 0 &&
+                typeof node[0] === 'object' &&
+                node[0] !== null &&
+                !Array.isArray(node[0])
+            ) {
+                const idLike = node.filter(
+                    (row) => pickFirstDefined(row, ['id', 'Id', 'orderId', 'OrderId']) != null
+                ).length;
+                const score = idLike * 10000 + node.length;
+                candidates.push({ arr: node, score });
+            }
+            for (const el of node) walk(el, depth + 1);
+            return;
+        }
+
+        for (const k of Object.keys(node)) {
+            walk(node[k], depth + 1);
+        }
+    };
+
+    walk(root, 0);
+    if (!candidates.length) return [];
+    candidates.sort((a, b) => b.score - a.score);
+    return candidates[0].arr;
+}
+
 
 export function getOrderSortTimestamp(order) {
     const raw =
@@ -202,7 +240,21 @@ export function getOrderSortTimestamp(order) {
 }
 
 export function getOrderTotalNumber(order) {
-    const raw = pickFirstDefined(order, ['total', 'Total', 'subtotal', 'Subtotal', 'grandTotal', 'GrandTotal']) ?? 0;
+    const raw =
+        pickFirstDefined(order, [
+            'total',
+            'Total',
+            'orderTotal',
+            'OrderTotal',
+            'subtotal',
+            'Subtotal',
+            'grandTotal',
+            'GrandTotal',
+            'amount',
+            'Amount',
+            'price',
+            'Price',
+        ]) ?? 0;
     const n = Number(raw);
     return Number.isFinite(n) ? n : 0;
 }
