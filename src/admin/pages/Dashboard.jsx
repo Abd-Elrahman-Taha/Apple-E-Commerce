@@ -25,7 +25,12 @@ function buildCustomerRows(orders) {
         const emailKey = emailRaw.toLowerCase();
         const phone = (o.deliveryInfo?.phone || '').trim();
         const name = (o.deliveryInfo?.fullName || '').trim() || 'Unknown customer';
-        const key = emailKey || phone || name;
+        const addrKey = (o.deliveryInfo?.address || '').trim().toLowerCase().slice(0, 48);
+        const key =
+            emailKey ||
+            (phone ? `phone:${phone}` : '') ||
+            (name !== 'Unknown customer' && addrKey ? `${name}|${addrKey}` : '') ||
+            `order:${o.id ?? o.orderNumber ?? getOrderSortTimestamp(o)}`;
         const ts = getOrderSortTimestamp(o);
 
         if (!map.has(key)) {
@@ -61,6 +66,7 @@ const Dashboard = () => {
     } = useAdminStore();
 
     useEffect(() => {
+        fetchOrders();
         fetchProducts();
 
         const interval = setInterval(() => {
@@ -68,7 +74,7 @@ const Dashboard = () => {
         }, 15000);
 
         return () => clearInterval(interval);
-    }, [fetchProducts]);
+    }, [fetchOrders, fetchProducts]);
 
     const safeOrders = Array.isArray(orders) ? orders : [];
     const safeProducts = Array.isArray(products) ? products : [];
@@ -412,7 +418,7 @@ const Dashboard = () => {
                                 </thead>
                                 <tbody>
                                     {latestCustomers.map((cust) => (
-                                        <tr key={`${cust.email}|${cust.phone}|${cust.name}`}>
+                                        <tr key={`${cust.email}|${cust.phone}|${cust.name}|${cust.lastTs}`}>
                                             <td style={{ fontWeight: 600 }}>{cust.name}</td>
                                             <td style={{ color: 'var(--admin-text-muted)' }}>{cust.email}</td>
                                             <td style={{ color: 'var(--admin-text-muted)' }}>{cust.phone}</td>
