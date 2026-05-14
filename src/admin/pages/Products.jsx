@@ -3,35 +3,24 @@ import { Link, useNavigate } from 'react-router-dom';
 import adminApi from '../services/adminApi';
 import Toast from '../components/Toast';
 import useToast from '../hooks/useToast';
+import useAdminStore from '../store/useAdminStore';
 
 const Products = () => {
     const navigate = useNavigate();
     const { toasts, toast, removeToast } = useToast();
-    const [products, setProducts] = useState([]);
+    const { products, loadingProducts: loading, fetchProducts, deleteProduct: deleteProductFromStore } = useAdminStore();
+    
     const [filtered, setFiltered] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('');
     const [deleteId, setDeleteId] = useState(null);
     const [deleting, setDeleting] = useState(false);
 
-    const fetchProducts = async () => {
-        try {
-            setLoading(true);
-            const res = await adminApi.getProducts(1, 200);
-            const list = res.data?.data || res.data || [];
-            setProducts(list);
-            setFiltered(list);
-        } catch (err) {
-            toast.error('Failed to load products');
-        } finally {
-            setLoading(false);
-        }
-    };
-
     useEffect(() => {
-        fetchProducts();
-    }, []);
+        if (products.length === 0) {
+            fetchProducts();
+        }
+    }, [products.length, fetchProducts]);
 
     useEffect(() => {
         let result = [...products];
@@ -56,8 +45,7 @@ const Products = () => {
         if (!deleteId) return;
         setDeleting(true);
         try {
-            await adminApi.deleteProduct(deleteId);
-            setProducts((prev) => prev.filter((p) => p.id !== deleteId));
+            await deleteProductFromStore(deleteId);
             toast.success('Product deleted successfully');
         } catch (err) {
             toast.error('Failed to delete product');

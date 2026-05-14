@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import adminApi from '../services/adminApi';
+import useAdminStore from '../store/useAdminStore';
 
 const STATUS_COLORS = {
     Pending: '#ffd60a',
@@ -17,27 +17,21 @@ const STATUS_ICONS = {
 };
 
 const Dashboard = () => {
-    const [products, setProducts] = useState([]);
-    const [orders, setOrders] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const { orders, products, loadingOrders, loadingProducts, fetchOrders, fetchProducts } = useAdminStore();
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const [prodRes, ordRes] = await Promise.all([
-                    adminApi.getProducts(1, 100),
-                    adminApi.getOrders(),
-                ]);
-                setProducts(prodRes.data?.data || prodRes.data || []);
-                setOrders(Array.isArray(ordRes.data) ? ordRes.data : []);
-            } catch (err) {
-                console.error('Dashboard fetch error:', err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchData();
+        fetchOrders();
+        fetchProducts();
+        
+        // Auto-refresh every 30 seconds to keep dashboard synced
+        const interval = setInterval(() => {
+            fetchOrders();
+        }, 30000);
+
+        return () => clearInterval(interval);
     }, []);
+
+    const loading = loadingOrders || loadingProducts;
 
     const totalRevenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
     const statusCounts = orders.reduce((acc, o) => {
@@ -48,11 +42,27 @@ const Dashboard = () => {
     const latestOrders = [...orders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
     const recentProducts = [...products].slice(0, 6);
 
-    if (loading) {
+    const latestCustomers = [...orders]
+        .filter(o => o.deliveryInfo?.fullName)
+        .filter((o, index, self) => 
+            index === self.findIndex((t) => (
+                t.deliveryInfo?.phone === o.deliveryInfo?.phone || 
+                t.deliveryInfo?.fullName === o.deliveryInfo?.fullName
+            ))
+        )
+        .slice(0, 5)
+        .map(o => ({
+            name: o.deliveryInfo.fullName,
+            phone: o.deliveryInfo.phone || '—',
+            city: o.deliveryInfo.city || '—',
+            date: new Date(o.createdAt).toLocaleDateString()
+        }));
+
+    if (loading && orders.length === 0 && products.length === 0) {
         return (
             <div className="admin-loading">
                 <div className="admin-loading-spinner" />
-                <p>Loading dashboard...</p>
+                <p>Loading dashboard data...</p>
             </div>
         );
     }
@@ -168,6 +178,7 @@ const Dashboard = () => {
                                         <th>Order</th>
                                         <th>Customer</th>
                                         <th>Total</th>
+                                        <th>Payment Method</th>
                                         <th>Status</th>
                                         <th>Date</th>
                                     </tr>
@@ -178,6 +189,9 @@ const Dashboard = () => {
                                             <td className="order-number-cell">#{order.orderNumber || order.id}</td>
                                             <td>{order.deliveryInfo?.fullName || '—'}</td>
                                             <td className="order-total-cell">${order.total?.toFixed(2)}</td>
+                                            <td>
+                                                <span className="admin-payment-badge">{order.paymentMethod || '—'}</span>
+                                            </td>
                                             <td>
                                                 <span className="admin-status-badge" style={{ background: `${STATUS_COLORS[order.status]}18`, color: STATUS_COLORS[order.status] }}>
                                                     {order.status === 'OnDelivery' ? 'On Delivery' : order.status}
@@ -217,6 +231,41 @@ const Dashboard = () => {
                                     </div>
                                 </div>
                             ))}
+                        </div>
+                    )}
+                </div>
+                
+                <div className="admin-card admin-latest-customers">
+                    <div className="admin-card-header">
+                        <h3>Latest Customers</h3>
+                    </div>
+                    {latestCustomers.length === 0 ? (
+                        <div className="admin-empty">
+                            <i className="fa-solid fa-users" />
+                            <p>No customers yet</p>
+                        </div>
+                    ) : (
+                        <div className="admin-table-wrapper">
+                            <table className="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Phone</th>
+                                        <th>City</th>
+                                        <th>First Order</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {latestCustomers.map((cust, idx) => (
+                                        <tr key={idx}>
+                                            <td style={{ fontWeight: 600 }}>{cust.name}</td>
+                                            <td style={{ color: 'var(--admin-text-muted)' }}>{cust.phone}</td>
+                                            <td>{cust.city}</td>
+                                            <td className="order-date-cell">{cust.date}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
                     )}
                 </div>

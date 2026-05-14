@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import adminApi from '../services/adminApi';
 import Toast from '../components/Toast';
 import useToast from '../hooks/useToast';
+import useAdminStore from '../store/useAdminStore';
 
 const STATUSES = ['Pending', 'Processing', 'OnDelivery', 'Delivered'];
 
@@ -21,26 +22,18 @@ const STATUS_ICONS = {
 
 const Orders = () => {
     const { toasts, toast, removeToast } = useToast();
-    const [orders, setOrders] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const { orders, loadingOrders: loading, fetchOrders, updateOrderStatus: updateStatusInStore } = useAdminStore();
+    
     const [statusFilter, setStatusFilter] = useState('');
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [detailLoading, setDetailLoading] = useState(false);
     const [updatingId, setUpdatingId] = useState(null);
 
     useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                const res = await adminApi.getOrders();
-                setOrders(Array.isArray(res.data) ? res.data : []);
-            } catch (err) {
-                toast.error('Failed to load orders');
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchOrders();
-    }, []);
+        if (orders.length === 0) {
+            fetchOrders();
+        }
+    }, [orders.length, fetchOrders]);
 
     const filteredOrders = statusFilter
         ? orders.filter((o) => o.status === statusFilter)
@@ -49,10 +42,7 @@ const Orders = () => {
     const handleStatusChange = async (orderId, newStatus) => {
         setUpdatingId(orderId);
         try {
-            const res = await adminApi.updateOrderStatus(orderId, newStatus);
-            setOrders((prev) =>
-                prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
-            );
+            await updateStatusInStore(orderId, newStatus);
             if (selectedOrder?.id === orderId) {
                 setSelectedOrder((prev) => ({ ...prev, status: newStatus }));
             }
