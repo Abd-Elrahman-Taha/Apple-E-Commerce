@@ -13,7 +13,12 @@ const useAdminStore = create((set, get) => ({
         set({ loadingOrders: true, errorOrders: null });
         try {
             const res = await adminApi.getOrders();
-            const data = Array.isArray(res.data) ? res.data : (res.data?.data || []);
+            let data = [];
+            if (Array.isArray(res.data)) data = res.data;
+            else if (Array.isArray(res.data?.data)) data = res.data.data;
+            else if (Array.isArray(res.data?.$values)) data = res.data.$values;
+            else if (Array.isArray(res.data?.items)) data = res.data.items;
+            
             set({ orders: data, loadingOrders: false });
         } catch (error) {
             set({ errorOrders: error.message, loadingOrders: false });
@@ -25,7 +30,12 @@ const useAdminStore = create((set, get) => ({
         set({ loadingProducts: true, errorProducts: null });
         try {
             const res = await adminApi.getProducts(page, pageSize);
-            const data = res.data?.data || res.data || [];
+            let data = [];
+            if (Array.isArray(res.data)) data = res.data;
+            else if (Array.isArray(res.data?.data)) data = res.data.data;
+            else if (Array.isArray(res.data?.$values)) data = res.data.$values;
+            else if (Array.isArray(res.data?.items)) data = res.data.items;
+            
             set({ products: data, loadingProducts: false });
         } catch (error) {
             set({ errorProducts: error.message, loadingProducts: false });

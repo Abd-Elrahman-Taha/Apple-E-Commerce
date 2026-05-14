@@ -22,7 +22,7 @@ const Dashboard = () => {
     useEffect(() => {
         fetchOrders();
         fetchProducts();
-        
+
         // Auto-refresh every 30 seconds to keep dashboard synced
         const interval = setInterval(() => {
             fetchOrders();
@@ -33,21 +33,28 @@ const Dashboard = () => {
 
     const loading = loadingOrders || loadingProducts;
 
-    const totalRevenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
-    const statusCounts = orders.reduce((acc, o) => {
+    const safeOrders = Array.isArray(orders) ? orders : [];
+    const safeProducts = Array.isArray(products) ? products : [];
+
+    const totalRevenue = safeOrders.reduce((sum, o) => sum + (Number(o.total) || 0), 0);
+    const statusCounts = safeOrders.reduce((acc, o) => {
         acc[o.status] = (acc[o.status] || 0) + 1;
         return acc;
     }, {});
 
-    const latestOrders = [...orders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
-    const recentProducts = [...products].slice(0, 6);
+    const latestOrders = [...safeOrders]
+        .filter(o => o?.createdAt)
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .slice(0, 5);
 
-    const latestCustomers = [...orders]
-        .filter(o => o.deliveryInfo?.fullName)
-        .filter((o, index, self) => 
+    const recentProducts = [...safeProducts].slice(0, 6);
+
+    const latestCustomers = [...safeOrders]
+        .filter(o => o?.deliveryInfo?.fullName)
+        .filter((o, index, self) =>
             index === self.findIndex((t) => (
-                t.deliveryInfo?.phone === o.deliveryInfo?.phone || 
-                t.deliveryInfo?.fullName === o.deliveryInfo?.fullName
+                (t.deliveryInfo?.phone && t.deliveryInfo.phone === o.deliveryInfo.phone) ||
+                (t.deliveryInfo?.fullName && t.deliveryInfo.fullName === o.deliveryInfo.fullName)
             ))
         )
         .slice(0, 5)
@@ -55,7 +62,7 @@ const Dashboard = () => {
             name: o.deliveryInfo.fullName,
             phone: o.deliveryInfo.phone || '—',
             city: o.deliveryInfo.city || '—',
-            date: new Date(o.createdAt).toLocaleDateString()
+            date: o.createdAt ? new Date(o.createdAt).toLocaleDateString() : '—'
         }));
 
     if (loading && orders.length === 0 && products.length === 0) {
@@ -234,7 +241,7 @@ const Dashboard = () => {
                         </div>
                     )}
                 </div>
-                
+
                 <div className="admin-card admin-latest-customers">
                     <div className="admin-card-header">
                         <h3>Latest Customers</h3>
