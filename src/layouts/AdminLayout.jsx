@@ -1,6 +1,8 @@
+import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import AdminSidebar from '../admin/components/AdminSidebar';
 import AdminMobileNav from '../admin/components/AdminMobileNav';
+import useAdminStore from '../admin/store/useAdminStore';
 import '../admin/admin.css';
 
 const pageTitles = {
@@ -12,6 +14,21 @@ const pageTitles = {
 
 const AdminLayout = () => {
     const location = useLocation();
+
+    useEffect(() => {
+        useAdminStore.getState().fetchOrders();
+    }, [location.pathname]);
+
+    useEffect(() => {
+        const onVisible = () => {
+            if (document.visibilityState === 'visible') {
+                useAdminStore.getState().fetchOrders();
+            }
+        };
+        document.addEventListener('visibilitychange', onVisible);
+        return () => document.removeEventListener('visibilitychange', onVisible);
+    }, []);
+
     const getTitle = () => {
         if (location.pathname.startsWith('/admin/edit-product')) return 'Edit Product';
         return pageTitles[location.pathname] || 'Admin';

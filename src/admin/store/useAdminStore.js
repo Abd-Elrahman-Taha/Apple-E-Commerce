@@ -1,7 +1,9 @@
 import { create } from 'zustand';
 import adminApi from '../services/adminApi';
+import { extractListFromApiData } from '../utils/adminOrdersUtils';
+import { loadAdminOrdersFromApi } from '../services/adminOrdersService';
 
-const useAdminStore = create((set, get) => ({
+const useAdminStore = create((set) => ({
     orders: [],
     products: [],
     loadingOrders: false,
@@ -12,17 +14,16 @@ const useAdminStore = create((set, get) => ({
     fetchOrders: async () => {
         set({ loadingOrders: true, errorOrders: null });
         try {
-            const res = await adminApi.getOrders();
-            let data = [];
-            if (Array.isArray(res.data)) data = res.data;
-            else if (Array.isArray(res.data?.data)) data = res.data.data;
-            else if (Array.isArray(res.data?.$values)) data = res.data.$values;
-            else if (Array.isArray(res.data?.items)) data = res.data.items;
-            
-            set({ orders: data, loadingOrders: false });
+            const orders = await loadAdminOrdersFromApi();
+            set({ orders, loadingOrders: false, errorOrders: null });
         } catch (error) {
-            set({ errorOrders: error.message, loadingOrders: false });
-            console.error("Failed to fetch admin orders", error);
+            const message =
+                error?.response?.data?.message ||
+                error?.response?.data?.title ||
+                error?.message ||
+                'Failed to load orders';
+            set({ errorOrders: message, loadingOrders: false });
+            console.error('Failed to fetch admin orders', error);
         }
     },
 
@@ -30,16 +31,16 @@ const useAdminStore = create((set, get) => ({
         set({ loadingProducts: true, errorProducts: null });
         try {
             const res = await adminApi.getProducts(page, pageSize);
-            let data = [];
-            if (Array.isArray(res.data)) data = res.data;
-            else if (Array.isArray(res.data?.data)) data = res.data.data;
-            else if (Array.isArray(res.data?.$values)) data = res.data.$values;
-            else if (Array.isArray(res.data?.items)) data = res.data.items;
-            
-            set({ products: data, loadingProducts: false });
+            const data = extractListFromApiData(res.data);
+            set({ products: data, loadingProducts: false, errorProducts: null });
         } catch (error) {
-            set({ errorProducts: error.message, loadingProducts: false });
-            console.error("Failed to fetch admin products", error);
+            const message =
+                error?.response?.data?.message ||
+                error?.response?.data?.title ||
+                error?.message ||
+                'Failed to load products';
+            set({ errorProducts: message, loadingProducts: false });
+            console.error('Failed to fetch admin products', error);
         }
     },
 
@@ -48,12 +49,12 @@ const useAdminStore = create((set, get) => ({
             await adminApi.updateOrderStatus(orderId, status);
             set((state) => ({
                 orders: state.orders.map((o) =>
-                    o.id === orderId ? { ...o, status } : o
+                    String(o.id) === String(orderId) ? { ...o, status } : o
                 ),
             }));
             return true;
         } catch (error) {
-            console.error("Failed to update order status", error);
+            console.error('Failed to update order status', error);
             throw error;
         }
     },
@@ -66,10 +67,10 @@ const useAdminStore = create((set, get) => ({
             }));
             return true;
         } catch (error) {
-            console.error("Failed to delete product", error);
+            console.error('Failed to delete product', error);
             throw error;
         }
-    }
+    },
 }));
 
 export default useAdminStore;

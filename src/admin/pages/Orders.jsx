@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import adminApi from '../services/adminApi';
 import Toast from '../components/Toast';
 import useToast from '../hooks/useToast';
 import useAdminStore from '../store/useAdminStore';
+import { normalizeAdminOrder } from '../utils/adminOrdersUtils';
 
 const STATUSES = ['Pending', 'Processing', 'OnDelivery', 'Delivered'];
 
@@ -21,8 +23,15 @@ const STATUS_ICONS = {
 };
 
 const Orders = () => {
+    const { pathname } = useLocation();
     const { toasts, toast, removeToast } = useToast();
-    const { orders, loadingOrders: loading, fetchOrders, updateOrderStatus: updateStatusInStore } = useAdminStore();
+    const {
+        orders,
+        loadingOrders: loading,
+        fetchOrders,
+        updateOrderStatus: updateStatusInStore,
+        errorOrders,
+    } = useAdminStore();
     
     const [statusFilter, setStatusFilter] = useState('');
     const [selectedOrder, setSelectedOrder] = useState(null);
@@ -30,10 +39,10 @@ const Orders = () => {
     const [updatingId, setUpdatingId] = useState(null);
 
     useEffect(() => {
-        if (orders.length === 0) {
+        if (pathname === '/admin/orders') {
             fetchOrders();
         }
-    }, [orders.length, fetchOrders]);
+    }, [pathname, fetchOrders]);
 
     const filteredOrders = statusFilter
         ? orders.filter((o) => o.status === statusFilter)
@@ -59,7 +68,8 @@ const Orders = () => {
         setSelectedOrder(order);
         try {
             const res = await adminApi.getOrder(order.id);
-            setSelectedOrder(res.data);
+            const detail = normalizeAdminOrder(res.data) || res.data;
+            setSelectedOrder(detail);
         } catch (err) {
             toast.error('Failed to load order details');
         } finally {
@@ -72,11 +82,23 @@ const Orders = () => {
         return acc;
     }, {});
 
-    if (loading) {
+    if (loading && orders.length === 0) {
         return (
             <div className="admin-loading">
                 <div className="admin-loading-spinner" />
                 <p>Loading orders...</p>
+            </div>
+        );
+    }
+
+    if (errorOrders && orders.length === 0) {
+        return (
+            <div className="admin-empty" style={{ color: '#ff453a' }}>
+                <i className="fa-solid fa-triangle-exclamation" />
+                <p>{errorOrders}</p>
+                <button type="button" className="admin-btn mt-3" onClick={() => fetchOrders()}>
+                    Try again
+                </button>
             </div>
         );
     }
