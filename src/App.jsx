@@ -5,6 +5,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Navbar from './components/Navbar';
 import ErrorBoundary from './components/ErrorBoundary';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './admin/routes/AdminRoute';
+import AdminLayout from './layouts/AdminLayout';
 
 import Home from './pages/Home';
 import Store from './pages/Store';
@@ -19,33 +21,43 @@ import Checkout from './pages/Checkout';
 import Tracking from './pages/Tracking';
 import Profile from './pages/Profile';
 
-import './style.css'; 
+import Dashboard from './admin/pages/Dashboard';
+import Products from './admin/pages/Products';
+import Orders from './admin/pages/Orders';
+import AddProduct from './admin/pages/AddProduct';
+import EditProduct from './admin/pages/EditProduct';
+
+import './style.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
-
 const ScrollToTop = () => {
   const { pathname } = useLocation();
+  const adminPaths = ['/admin'];
+  const isAdmin = adminPaths.some(p => pathname.startsWith(p));
 
   useEffect(() => {
     window.scrollTo(0, 0);
-
-    
-    const raf = requestAnimationFrame(() => {
-      ScrollTrigger.refresh();
-    });
-
-    return () => cancelAnimationFrame(raf);
+    if (!isAdmin) {
+      const raf = requestAnimationFrame(() => { ScrollTrigger.refresh(); });
+      return () => cancelAnimationFrame(raf);
+    }
   }, [pathname]);
 
   return null;
+};
+
+const AppNavbar = () => {
+  const { pathname } = useLocation();
+  if (pathname.startsWith('/admin')) return null;
+  return <Navbar />;
 };
 
 const App = () => {
   return (
     <ErrorBoundary>
       <ScrollToTop />
-      <Navbar />
+      <AppNavbar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/store" element={<Store />} />
@@ -62,10 +74,19 @@ const App = () => {
           <Route path="/tracking" element={<Tracking />} />
           <Route path="/profile" element={<Profile />} />
         </Route>
+
+        <Route element={<AdminRoute />}>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="products" element={<Products />} />
+            <Route path="orders" element={<Orders />} />
+            <Route path="add-product" element={<AddProduct />} />
+            <Route path="edit-product/:id" element={<EditProduct />} />
+          </Route>
+        </Route>
       </Routes>
     </ErrorBoundary>
   );
 };
 
 export default App;
-

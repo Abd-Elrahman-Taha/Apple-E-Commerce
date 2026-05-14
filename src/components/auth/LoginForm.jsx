@@ -30,20 +30,27 @@ const LoginForm = forwardRef(({ onSwitch }, ref) => {
             const data = response.data;
 
             if (data.success !== false) {
-                const token = data.token || data.accessToken || data.data?.token || data.data?.accessToken;
-                const userData = data.user || data.data?.user || data.data || {
-                    name: data.name || email.split('@')[0],
-                    email: data.email || email,
-                    avatar: data.avatar || data.profileImage || null,
+                const token = data.data?.token || data.token || data.accessToken;
+                const user = data.data?.user || data.user || {};
+                const userData = {
+                    id: user.id || null,
+                    name: user.name || email.split('@')[0],
+                    email: user.email || email,
+                    avatar: user.avatar || user.profileImage || null,
                 };
+                const role = user.role || null;
 
                 if (token) {
-                    login(userData, token);
+                    login(userData, token, role);
                 } else {
-                    login(userData, 'session-active');
+                    login(userData, 'session-active', role);
                 }
 
-                navigate(redirectPath, { replace: true });
+                if (role === 'Admin' && !redirectPath.startsWith('/admin')) {
+                    navigate(redirectPath, { replace: true });
+                } else {
+                    navigate(redirectPath, { replace: true });
+                }
             } else {
                 setError(data.message || 'Invalid credentials');
             }

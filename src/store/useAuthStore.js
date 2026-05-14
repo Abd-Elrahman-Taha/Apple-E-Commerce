@@ -22,6 +22,7 @@ const useAuthStore = create(
         (set, get) => ({
             user: null,
             token: null,
+            role: null,
 
             get isAuthenticated() {
                 const { token } = get();
@@ -31,12 +32,16 @@ const useAuthStore = create(
                 return payload.exp * 1000 > Date.now();
             },
 
-            login: (userData, token) => {
-                set({ user: userData, token });
+            get isAdmin() {
+                return get().role === 'Admin';
+            },
+
+            login: (userData, token, role) => {
+                set({ user: userData, token, role: role || userData?.role || null });
             },
 
             logout: () => {
-                set({ user: null, token: null });
+                set({ user: null, token: null, role: null });
             },
 
             updateUser: (data) => {

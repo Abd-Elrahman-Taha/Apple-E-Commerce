@@ -76,6 +76,13 @@ const Navbar = () => {
 
                         {isLoggedIn ? (
                             <>
+                                {useAuthStore.getState().role === 'Admin' && (
+                                    <li className="nav-item d-lg-none">
+                                        <Link className={`nav-link ${location.pathname.startsWith('/admin') ? 'active' : ''}`} to="/admin">
+                                            Admin Dashboard
+                                        </Link>
+                                    </li>
+                                )}
                                 <li className="nav-item d-lg-none">
                                     <Link className={`nav-link ${location.pathname === '/profile' ? 'active' : ''}`} to="/profile">
                                         <span className="mobile-auth-item">
@@ -150,6 +157,12 @@ const Navbar = () => {
                                     <p className="dropdown-email">{user?.email || ''}</p>
                                 </div>
 
+                                {useAuthStore.getState().role === 'Admin' && (
+                                    <Link to="/admin" className="nav-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                                        <i className="fa-solid fa-gauge-high"></i>
+                                        Admin Dashboard
+                                    </Link>
+                                )}
                                 <Link to="/profile" className="nav-dropdown-item" onClick={() => setDropdownOpen(false)}>
                                     <i className="fa-solid fa-user"></i>
                                     Profile
