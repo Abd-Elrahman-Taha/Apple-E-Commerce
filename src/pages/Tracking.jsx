@@ -20,7 +20,9 @@ const Tracking = () => {
     }, [orders.length]);
 
     const formatDate = (dateString) => {
+        if (!dateString) return 'Unknown date';
         const date = new Date(dateString);
+        if (isNaN(date.getTime())) return 'Unknown date';
         return new Intl.DateTimeFormat('en-US', { 
             year: 'numeric', month: 'long', day: 'numeric', 
             hour: '2-digit', minute: '2-digit' 
@@ -61,18 +63,18 @@ const Tracking = () => {
                         <div key={order.id} className="order-card">
                             <div className="order-header">
                                 <div>
-                                    <h3 className="order-id">Order {order.id}</h3>
-                                    <p className="order-date">Placed on {formatDate(order.date)}</p>
+                                    <h3 className="order-id">Order {order.id || order.orderNumber}</h3>
+                                    <p className="order-date">Placed on {formatDate(order.createdAt || order.date)}</p>
                                 </div>
-                                <div className={`order-status-badge status-${order.status.toLowerCase().replace(' ', '')}`}>
-                                    {order.status}
+                                <div className={`order-status-badge status-${(order.status || 'Pending').toLowerCase().replace(' ', '')}`}>
+                                    {order.status || 'Pending'}
                                 </div>
                             </div>
 
 
                             <div className="order-timeline">
                                 {['Pending', 'Processing', 'On Delivery', 'Delivered'].map((step, index) => {
-                                    const currentIndex = getTimelineIndex(order.status);
+                                    const currentIndex = getTimelineIndex(order.status || 'Pending');
                                     let stepClass = 'timeline-step';
                                     if (index < currentIndex) stepClass += ' completed';
                                     if (index === currentIndex) stepClass += ' active';

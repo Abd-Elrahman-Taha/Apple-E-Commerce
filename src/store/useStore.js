@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { withFixedProductImages } from '../utils/productImages';
+import { withFixedProductImages, getApiImageUrl } from '../utils/productImages';
 import api from '../api/api';
 
 const useStore = create(
@@ -45,15 +45,20 @@ const useStore = create(
                 const { cart } = get();
                 const basketId = 'BASKET-' + Math.random().toString(36).substr(2, 9).toUpperCase();
 
-                const basketItems = cart.map(item => ({
-                    id: Number(item.id),
-                    name: item.name || 'Unknown Item',
-                    pictureUrl: item.pictureUrl || item.image || '',
-                    price: Number(item.price) || 0,
-                    quantity: Number(item.quantity) || 1,
-                    brand: item.brand || 'Apple',
-                    type: item.type || 'Product'
-                }));
+                const basketItems = cart.map(item => {
+                    const apiImageUrl = getApiImageUrl(item);
+                    return {
+                        id: Number(item.id),
+                        name: item.name || 'Unknown Item',
+                        pictureUrl: apiImageUrl,
+                        image: apiImageUrl,
+                        price: Number(item.price) || 0,
+                        quantity: Number(item.quantity) || 1,
+                        category: item.categoryName || item.category || '',
+                        storage: item.storage || '',
+                        color: item.color || ''
+                    };
+                });
 
                 await api.post('/Basket', {
                     id: basketId,
