@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { withFixedProductImages } from '../utils/productImages';
 
 const useStore = create(
     persist(
@@ -9,14 +10,15 @@ const useStore = create(
             
             addToCart: (product) => {
                 const { cart } = get();
-                const existingItemIndex = cart.findIndex(item => item.id === product.id);
+                const item = withFixedProductImages(product);
+                const existingItemIndex = cart.findIndex((i) => i.id === item.id);
                 
                 if (existingItemIndex >= 0) {
                     const newCart = [...cart];
                     newCart[existingItemIndex].quantity += 1;
                     set({ cart: newCart });
                 } else {
-                    set({ cart: [...cart, { ...product, quantity: 1 }] });
+                    set({ cart: [...cart, { ...item, quantity: 1 }] });
                 }
             },
             

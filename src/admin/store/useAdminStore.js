@@ -2,10 +2,21 @@ import { create } from 'zustand';
 import adminApi from '../services/adminApi';
 import { extractListFromApiData } from '../utils/adminOrdersUtils';
 import { loadAdminOrdersFromApi } from '../services/adminOrdersService';
+import {
+    dedupeProductsById,
+    getDuplicateProductIdsToDelete,
+} from '../utils/productUtils';
+import {
+    getProductImageUrl,
+    getApiImageUrl,
+    needsProductImageFix,
+    withFixedProductImages,
+} from '../../utils/productImages';
 
-const useAdminStore = create((set) => ({
+const useAdminStore = create((set, get) => ({
     orders: [],
     products: [],
+    totalProducts: 0,
     loadingOrders: false,
     loadingProducts: false,
     errorOrders: null,
@@ -27,12 +38,39 @@ const useAdminStore = create((set) => ({
         }
     },
 
-    fetchProducts: async (page = 1, pageSize = 100) => {
+    fetchProducts: async () => {
         set({ loadingProducts: true, errorProducts: null });
         try {
-            const res = await adminApi.getProducts(page, pageSize);
-            const data = extractListFromApiData(res.data);
-            set({ products: data, loadingProducts: false, errorProducts: null });
+            // Backend caps pageSize at 20 — must fetch all pages
+            const PAGE_SIZE = 20;
+            const firstRes = await adminApi.getProducts(1, PAGE_SIZE);
+            const firstRaw = firstRes.data;
+            const firstData = extractListFromApiData(firstRaw);
+            const totalCount = firstRaw?.totalCount ?? firstRaw?.TotalCount ?? firstData.length;
+            
+            let allProducts = [...firstData];
+            const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+            
+            // Fetch remaining pages in parallel (pages 2..N)
+            if (totalPages > 1) {
+                const pagePromises = [];
+                for (let p = 2; p <= totalPages; p++) {
+                    pagePromises.push(adminApi.getProducts(p, PAGE_SIZE));
+                }
+                const responses = await Promise.all(pagePromises);
+                for (const res of responses) {
+                    const pageData = extractListFromApiData(res.data);
+                    allProducts = allProducts.concat(pageData);
+                }
+            }
+            
+            const products = dedupeProductsById(allProducts).map(withFixedProductImages);
+            set({
+                products,
+                totalProducts: products.length,
+                loadingProducts: false,
+                errorProducts: null,
+            });
         } catch (error) {
             const message =
                 error?.response?.data?.message ||
@@ -62,14 +100,77 @@ const useAdminStore = create((set) => ({
     deleteProduct: async (productId) => {
         try {
             await adminApi.deleteProduct(productId);
-            set((state) => ({
-                products: state.products.filter((p) => p.id !== productId),
-            }));
+            set((state) => {
+                const products = state.products.filter(
+                    (p) => String(p.id) !== String(productId)
+                );
+                return { products, totalProducts: products.length };
+            });
             return true;
         } catch (error) {
             console.error('Failed to delete product', error);
             throw error;
         }
+    },
+
+    /** Persist local image URLs for products still pointing at broken external hosts. */
+    fixBrokenProductImages: async () => {
+        const { products } = get();
+        const toFix = products.filter(needsProductImageFix);
+        if (toFix.length === 0) {
+            return { updated: 0, failed: 0 };
+        }
+
+        let updated = 0;
+        let failed = 0;
+        for (const product of toFix) {
+            // Use full https:// URL for the API — local paths cause 400 errors
+            const pictureUrl = getApiImageUrl(product);
+            try {
+                await adminApi.updateProduct(product.id, {
+                    name: product.name,
+                    description: product.description ?? product.desc ?? '',
+                    pictureUrl,
+                    price: Number(product.price) || 0,
+                    brandId: product.brandId,
+                    categoryId: product.categoryId,
+                    badge: product.badge ?? null,
+                    rating: product.rating ? Number(product.rating) : 0,
+                    reviewsCount: product.reviewsCount ?? product.reviews ?? 0,
+                    specsJson: product.specsJson ?? null,
+                });
+                updated += 1;
+            } catch (error) {
+                failed += 1;
+                console.warn(`Failed to update image for product ${product.id}`, error);
+            }
+        }
+
+        await get().fetchProducts();
+        return { updated, failed };
+    },
+
+    removeDuplicateProducts: async () => {
+        const products = get().products;
+        const idsToDelete = getDuplicateProductIdsToDelete(products);
+        if (idsToDelete.length === 0) {
+            return { removed: 0, failed: 0 };
+        }
+
+        let removed = 0;
+        let failed = 0;
+        for (const id of idsToDelete) {
+            try {
+                await adminApi.deleteProduct(id);
+                removed += 1;
+            } catch (error) {
+                failed += 1;
+                console.warn(`Failed to delete duplicate product ${id}`, error);
+            }
+        }
+
+        await get().fetchProducts();
+        return { removed, failed };
     },
 }));
 

@@ -800,11 +800,12 @@
     width: 48px;
     height: 48px;
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.05);
+    background: #ffffff;
     padding: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
+    border: 1px solid rgba(0,0,0,0.06);
 }
 
 .product-cell-img img {
@@ -1018,12 +1019,14 @@
 .order-item-img {
     width: 60px;
     height: 60px;
-    background: rgba(255, 255, 255, 0.05);
+    background: #ffffff;
     border-radius: 8px;
     padding: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
+    border: 1px solid rgba(0,0,0,0.06);
+    flex-shrink: 0;
 }
 
 .order-item-img img {
@@ -1235,12 +1238,13 @@
 
 .product-mini-img {
     height: 100px;
-    background: rgba(255, 255, 255, 0.02);
+    background: #ffffff;
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 8px;
+    border: 1px solid rgba(0,0,0,0.06);
 }
 
 .product-mini-img img {
@@ -1324,14 +1328,7 @@
     color: var(--admin-text);
 }
 
-@media (max-width: 768px) {
-    .admin-orders-list-desktop {
-        display: none;
-    }
-    .admin-orders-list-mobile {
-        display: flex;
-    }
-}
+
 
 /* Toast System */
 .admin-toast-container {
@@ -1370,3 +1367,288 @@
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   COMPREHENSIVE MOBILE RESPONSIVE — Dashboard, Products, Orders
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Tablet (max-width: 991px) ────────────────────────────────────── */
+@media (max-width: 991px) {
+    .admin-content {
+        padding: 0 16px 16px;
+    }
+    .admin-header {
+        padding: 20px 16px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .admin-page-title {
+        font-size: 1.6rem;
+    }
+    .admin-form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── Phone (max-width: 768px) ─────────────────────────────────────── */
+@media (max-width: 768px) {
+    /* Stats Grid */
+    .admin-stats-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .admin-stat-card {
+        padding: 16px;
+        gap: 14px;
+    }
+    .stat-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        font-size: 1.2rem;
+    }
+    .stat-value {
+        font-size: 1.4rem;
+    }
+    .stat-label {
+        font-size: 0.82rem;
+    }
+
+    /* Dashboard Row — Charts / Revenue / Status */
+    .admin-dashboard-row {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .admin-card {
+        padding: 16px;
+    }
+    .admin-card-header {
+        margin-bottom: 16px;
+    }
+    .admin-card-header h3 {
+        font-size: 1rem;
+    }
+
+    /* Revenue Card */
+    .revenue-amount {
+        font-size: 1.8rem;
+    }
+    .revenue-main {
+        padding: 20px 0;
+    }
+    .revenue-stats {
+        flex-direction: column;
+        gap: 12px;
+    }
+    .revenue-stat-item {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    /* Order Status Grid */
+    .order-status-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+    .order-status-item {
+        padding: 12px 10px;
+    }
+    .order-status-count {
+        font-size: 1.2rem;
+    }
+    .order-status-name {
+        font-size: 0.7rem;
+    }
+
+    /* Tabs */
+    .admin-tabs {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 4px;
+    }
+    .admin-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Status Filters */
+    .admin-status-filters {
+        gap: 8px;
+        padding-bottom: 4px;
+    }
+    .admin-status-filter-btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+        border-radius: 16px;
+    }
+    .filter-count {
+        font-size: 0.7rem;
+        padding: 1px 6px;
+    }
+
+    /* Products Toolbar */
+    .admin-page-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    .admin-toolbar-left {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .admin-search-box {
+        max-width: 100%;
+    }
+    .admin-filter-select {
+        width: 100%;
+        min-width: unset;
+    }
+    .admin-page-toolbar > div:last-child {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .admin-page-toolbar .admin-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Forms */
+    .admin-field-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    .admin-form-page {
+        max-width: 100%;
+    }
+
+    /* Order Detail Modal */
+    .admin-modal {
+        padding: 20px;
+        border-radius: 16px;
+    }
+    .admin-modal-lg {
+        max-width: 100%;
+        max-height: 85vh;
+        margin: 0;
+    }
+    .order-detail-header {
+        flex-direction: column;
+        gap: 12px;
+    }
+    .order-detail-header h3 {
+        font-size: 1.2rem;
+    }
+    .order-detail-info-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 14px;
+    }
+    .order-total-row {
+        width: 100%;
+    }
+    .order-detail-total {
+        align-items: stretch;
+    }
+    .order-status-btns {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .order-status-btns .admin-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Table fallback — hide for mobile */
+    .admin-orders-list-desktop,
+    .admin-customers-list-desktop,
+    .admin-products-list-desktop {
+        display: none;
+    }
+    .admin-orders-list-mobile,
+    .admin-customers-list-mobile,
+    .admin-products-list-mobile {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    /* Order Cards */
+    .admin-order-card {
+        padding: 16px;
+    }
+    .order-card-header {
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+    }
+    .order-card-number {
+        font-size: 1rem;
+    }
+    .order-card-row {
+        font-size: 0.9rem;
+    }
+
+    /* Products count */
+    .admin-products-count {
+        font-size: 0.85rem;
+        margin-bottom: 12px;
+    }
+}
+
+/* ── Small Phone (max-width: 480px) ───────────────────────────────── */
+@media (max-width: 480px) {
+    .admin-header {
+        padding: 16px 12px;
+    }
+    .admin-content {
+        padding: 0 12px 12px;
+    }
+    .admin-page-title {
+        font-size: 1.3rem;
+    }
+    .admin-page-sub {
+        font-size: 0.85rem;
+    }
+    .admin-stats-grid {
+        gap: 8px;
+    }
+    .admin-stat-card {
+        padding: 14px;
+        gap: 12px;
+    }
+    .stat-value {
+        font-size: 1.2rem;
+    }
+    .order-status-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+    .order-status-item {
+        padding: 10px 8px;
+    }
+    .order-status-count {
+        font-size: 1rem;
+    }
+    .revenue-amount {
+        font-size: 1.5rem;
+    }
+    .admin-card {
+        padding: 14px;
+        border-radius: 12px;
+    }
+    .admin-order-card {
+        padding: 14px;
+        border-radius: 12px;
+    }
+}
+
+/* ── Desktop: hide mobile-only elements ───────────────────────────── */
+@media (min-width: 769px) {
+    .admin-orders-list-mobile,
+    .admin-customers-list-mobile,
+    .admin-products-list-mobile {
+        display: none;
+    }
+}
+

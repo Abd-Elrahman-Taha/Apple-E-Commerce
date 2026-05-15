@@ -4,6 +4,7 @@ import adminApi from '../services/adminApi';
 import api from '../../api/api';
 import Toast from '../components/Toast';
 import useToast from '../hooks/useToast';
+import useAdminStore from '../store/useAdminStore';
 
 const AddProduct = () => {
     const navigate = useNavigate();
@@ -77,6 +78,7 @@ const AddProduct = () => {
                 specsJson: form.specsJson || null,
             };
             await adminApi.createProduct(payload);
+            useAdminStore.getState().fetchProducts();
             toast.success('Product created successfully!');
             setTimeout(() => navigate('/admin/products'), 1200);
         } catch (err) {

@@ -1,0 +1,111 @@
+.apple-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin: 40px 0;
+    padding: 0 20px;
+}
+
+.pagination-numbers {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pagination-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(120, 120, 128, 0.1);
+    color: var(--text-color, #1d1d1f);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dark-theme .pagination-btn,
+.admin-layout .pagination-btn {
+    color: #f5f5f7;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: var(--primary-color, #0066cc);
+    color: white;
+}
+
+.dark-theme .pagination-btn:hover:not(:disabled),
+.admin-layout .pagination-btn:hover:not(:disabled) {
+    background: var(--admin-primary, #2997ff);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.pagination-number {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-color, #1d1d1f);
+    font-size: 0.95rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dark-theme .pagination-number,
+.admin-layout .pagination-number {
+    color: #f5f5f7;
+}
+
+.pagination-number:hover {
+    background: rgba(120, 120, 128, 0.1);
+}
+
+.dark-theme .pagination-number:hover,
+.admin-layout .pagination-number:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.pagination-number.active {
+    background: var(--primary-color, #0066cc);
+    color: white;
+    font-weight: 600;
+}
+
+.dark-theme .pagination-number.active,
+.admin-layout .pagination-number.active {
+    background: var(--admin-primary, #2997ff);
+    color: white;
+}
+
+.pagination-dots {
+    color: var(--text-muted, #86868b);
+    padding: 0 4px;
+}
+
+@media (max-width: 576px) {
+    .apple-pagination {
+        gap: 12px;
+    }
+    .pagination-number {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+    .pagination-btn {
+        width: 36px;
+        height: 36px;
+    }
+}

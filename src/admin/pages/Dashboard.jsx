@@ -34,10 +34,11 @@ function buildCustomerRows(orders) {
         const phone = (o.deliveryInfo?.phone || '').trim();
         const name = (o.deliveryInfo?.fullName || '').trim() || 'Unknown';
         const addr = (o.deliveryInfo?.address || '').trim();
+        const email = (o.deliveryInfo?.email || o.user?.email || o.customerEmail || o.email || '').trim();
         const key = phone || `${name}|${addr}`.toLowerCase();
         const ts = getOrderSortTimestamp(o);
         if (!map.has(key)) {
-            map.set(key, { name, phone: phone || '—', address: addr || '—', orderCount: 0, totalSpent: 0, lastTs: 0, lastDate: '—' });
+            map.set(key, { name, phone: phone || '—', address: addr || '—', email: email || '—', orderCount: 0, totalSpent: 0, lastTs: 0, lastDate: '—' });
         }
         const row = map.get(key);
         row.orderCount += 1;
@@ -45,6 +46,7 @@ function buildCustomerRows(orders) {
         if (ts >= row.lastTs) {
             row.lastTs = ts;
             row.lastDate = o.createdAt ? new Date(o.createdAt).toLocaleDateString() : '—';
+            if (email && row.email === '—') row.email = email;
         }
     }
     return [...map.values()].sort((a, b) => b.lastTs - a.lastTs);
@@ -52,64 +54,18 @@ function buildCustomerRows(orders) {
 
 const Dashboard = () => {
     const { toasts, toast, removeToast } = useToast();
-    const [orders, setOrders] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const { orders, loadingOrders: loading, errorOrders: error, fetchOrders, updateOrderStatus } = useAdminStore();
     const [statusFilter, setStatusFilter] = useState('');
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [detailLoading, setDetailLoading] = useState(false);
     const [updatingId, setUpdatingId] = useState(null);
     const [activeTab, setActiveTab] = useState('orders');
 
-    async function loadOrders() {
-        try {
-            setError(null);
-            const res = await adminApi.getOrders();
-            
-            // Also check user-level endpoint for comparison
-            try {
-                const userRes = await import('../../api/api').then(m => m.default.get('/Orders'));
-                console.log('[Dashboard] USER /api/Orders data:', userRes.data, 'length:', Array.isArray(userRes.data) ? userRes.data.length : 'not array');
-            } catch (e) {
-                console.log('[Dashboard] USER /api/Orders error:', e.message);
-            }
-            const token = res.config?.headers?.Authorization;
-            console.log('[Dashboard] Auth token sent:', token ? token.substring(0, 30) + '...' : 'NO TOKEN!');
-            console.log('[Dashboard] Response status:', res.status);
-            console.log('[Dashboard] RAW res.data:', res.data);
-            console.log('[Dashboard] typeof res.data:', typeof res.data);
-            console.log('[Dashboard] Array.isArray:', Array.isArray(res.data));
-
-            // API returns flat OrderDto[] array per Swagger spec
-            let rawList = res.data;
-
-            // If somehow wrapped, try to extract
-            if (!Array.isArray(rawList)) {
-                console.log('[Dashboard] Not array, trying extraction...');
-                rawList = extractOrdersListWithFallback(res.data);
-            }
-
-            console.log('[Dashboard] rawList length:', rawList?.length);
-
-            // Normalize
-            const normalized = Array.isArray(rawList) ? normalizeAdminOrders(rawList) : [];
-            console.log('[Dashboard] normalized length:', normalized.length);
-            if (normalized.length > 0) console.log('[Dashboard] first order:', normalized[0]);
-
-            setOrders(normalized);
-            useAdminStore.setState({ orders: normalized, loadingOrders: false, errorOrders: null });
-        } catch (err) {
-            console.error('[Dashboard] FETCH ERROR:', err);
-            setError(err?.response?.data?.message || err?.message || 'Failed to load orders');
-        }
-    }
-
     useEffect(() => {
-        setLoading(true);
-        loadOrders().finally(() => setLoading(false));
-        const interval = setInterval(loadOrders, 20000);
+        fetchOrders();
+        const interval = setInterval(fetchOrders, 20000);
         return () => clearInterval(interval);
-    }, []);
+    }, [fetchOrders]);
 
     const safeOrders = Array.isArray(orders) ? orders : [];
 
@@ -131,8 +87,7 @@ const Dashboard = () => {
     const handleStatusChange = async (orderId, newStatus) => {
         setUpdatingId(orderId);
         try {
-            await adminApi.updateOrderStatus(orderId, newStatus);
-            setOrders(prev => prev.map(o => String(o.id) === String(orderId) ? { ...o, status: newStatus } : o));
+            await updateOrderStatus(orderId, newStatus);
             if (selectedOrder?.id === orderId) {
                 setSelectedOrder(prev => ({ ...prev, status: newStatus }));
             }
@@ -172,7 +127,7 @@ const Dashboard = () => {
             <div className="admin-empty" style={{ color: '#ff453a' }}>
                 <i className="fa-solid fa-triangle-exclamation" />
                 <p>{error}</p>
-                <button type="button" className="admin-btn mt-3" onClick={() => { setLoading(true); loadOrders().finally(() => setLoading(false)); }}>Try again</button>
+                <button type="button" className="admin-btn mt-3" onClick={() => fetchOrders()}>Try again</button>
             </div>
         );
     }
@@ -369,32 +324,59 @@ const Dashboard = () => {
                     {customerRows.length === 0 ? (
                         <div className="admin-empty"><i className="fa-solid fa-users" /><p>No customers yet</p></div>
                     ) : (
-                        <div className="admin-table-wrapper">
-                            <table className="admin-table">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Phone</th>
-                                        <th>Address</th>
-                                        <th>Orders</th>
-                                        <th>Total Spent</th>
-                                        <th>Last Order</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {customerRows.map((cust, i) => (
-                                        <tr key={i}>
-                                            <td style={{ fontWeight: 600 }}>{cust.name}</td>
-                                            <td style={{ color: 'var(--admin-text-muted)' }}>{cust.phone}</td>
-                                            <td style={{ color: 'var(--admin-text-muted)', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cust.address}</td>
-                                            <td><span className="admin-payment-badge">{cust.orderCount}</span></td>
-                                            <td className="order-total-cell">${cust.totalSpent.toFixed(2)}</td>
-                                            <td className="order-date-cell">{cust.lastDate}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                        <>
+                            <div className="admin-customers-list-desktop">
+                                <div className="admin-table-wrapper">
+                                    <table className="admin-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Customer</th>
+                                                <th>Phone</th>
+                                                <th>Address</th>
+                                                <th>Orders</th>
+                                                <th>Total Spent</th>
+                                                <th>Last Order</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {customerRows.map((cust, i) => (
+                                                <tr key={i}>
+                                                    <td>
+                                                        <div className="order-customer-cell">
+                                                            <span style={{ fontWeight: 600 }}>{cust.name}</span>
+                                                            <small>{cust.email !== '—' ? cust.email : ''}</small>
+                                                        </div>
+                                                    </td>
+                                                    <td style={{ color: 'var(--admin-text-muted)' }}>{cust.phone}</td>
+                                                    <td style={{ color: 'var(--admin-text-muted)', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cust.address}</td>
+                                                    <td><span className="admin-payment-badge">{cust.orderCount}</span></td>
+                                                    <td className="order-total-cell">${cust.totalSpent.toFixed(2)}</td>
+                                                    <td className="order-date-cell">{cust.lastDate}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div className="admin-customers-list-mobile">
+                                {customerRows.map((cust, i) => (
+                                    <div key={i} className="admin-order-card">
+                                        <div className="order-card-header">
+                                            <span className="order-card-number">{cust.name}</span>
+                                            <span className="admin-status-badge" style={{ background: `rgba(41, 151, 255, 0.1)`, color: '#2997ff' }}>
+                                                {cust.orderCount} Orders
+                                            </span>
+                                        </div>
+                                        <div className="order-card-body">
+                                            {cust.email !== '—' && <div className="order-card-row"><span className="order-card-label">Email</span><span>{cust.email}</span></div>}
+                                            <div className="order-card-row"><span className="order-card-label">Phone</span><span>{cust.phone}</span></div>
+                                            <div className="order-card-row"><span className="order-card-label">Total Spent</span><span className="order-card-total">${cust.totalSpent.toFixed(2)}</span></div>
+                                            <div className="order-card-row"><span className="order-card-label">Last Order</span><span>{cust.lastDate}</span></div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </>
                     )}
                 </div>
             )}

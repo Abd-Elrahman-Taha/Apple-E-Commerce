@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import gsap from 'gsap';
 import useStore from '../../store/useStore';
 import useAuthStore from '../../store/useAuthStore';
+import { getProductImageUrl, LOCAL_IMAGES } from '../../utils/productImages';
 
 const generateStarHTML = (rating) => {
     const fullStars = Math.floor(rating);
@@ -79,6 +80,8 @@ export const ProductCard = ({ product }) => {
         });
     };
 
+    const imageSrc = getProductImageUrl(product);
+
     return (
         <div 
             className="product-card js-card" 
@@ -88,11 +91,19 @@ export const ProductCard = ({ product }) => {
         >
             {product.badge && <div className="badge-tag">{product.badge}</div>}
             <div className="card-image-wrap">
-                <img src={product.image} alt={product.name} />
+                <img 
+                    src={imageSrc} 
+                    alt={product.name}
+                    loading="lazy"
+                    onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = LOCAL_IMAGES.iphoneBlue;
+                    }}
+                />
             </div>
             <div className="card-info">
                 <h3 className="product-name">{product.name}</h3>
-                <div className="product-desc">{product.desc}</div>
+                <div className="product-desc">{product.description || product.desc}</div>
                 
                 {}
                 <div className="product-specs-mini">

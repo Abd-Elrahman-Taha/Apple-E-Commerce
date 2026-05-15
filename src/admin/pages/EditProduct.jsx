@@ -4,6 +4,7 @@ import adminApi from '../services/adminApi';
 import api from '../../api/api';
 import Toast from '../components/Toast';
 import useToast from '../hooks/useToast';
+import useAdminStore from '../store/useAdminStore';
 
 const EditProduct = () => {
     const { id } = useParams();
@@ -99,7 +100,8 @@ const EditProduct = () => {
                 reviewsCount: form.reviewsCount ? parseInt(form.reviewsCount) : 0,
                 specsJson: form.specsJson || null,
             };
-            await adminApi.updateProduct(parseInt(id), payload);
+            await adminApi.updateProduct(id, payload);
+            useAdminStore.getState().fetchProducts();
             toast.success('Product updated successfully!');
             setTimeout(() => navigate('/admin/products'), 1200);
         } catch (err) {

@@ -4,6 +4,10 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import CategoryBar from '../components/store/CategoryBar';
 import FilterPanel from '../components/store/FilterPanel';
 import ProductsGrid from '../components/store/ProductsGrid';
+import Pagination from '../components/Pagination';
+import { extractListFromApiData } from '../admin/utils/adminOrdersUtils';
+import { dedupeProductsById } from '../admin/utils/productUtils';
+import { withFixedProductImages } from '../utils/productImages';
 import '../store.css';
 import api from '../api/api';
 
@@ -18,20 +22,44 @@ const Store = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchFocused, setSearchFocused] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 8;
 
-    // Fetch products
+    // Fetch ALL products (backend caps pageSize at 20)
     useEffect(() => {
-        setLoading(true);
-        api.get('/Product')
-            .then(response => {
-                setProducts(response.data.data || []);
-                setLoading(false);
-            })
-            .catch(err => {
+        const fetchAllProducts = async () => {
+            setLoading(true);
+            try {
+                const PAGE_SIZE = 20;
+                const firstRes = await api.get(`/Product?pageIndex=1&pageSize=${PAGE_SIZE}`);
+                const firstRaw = firstRes.data;
+                const firstList = extractListFromApiData(firstRaw);
+                const totalCount = firstRaw?.totalCount ?? firstRaw?.TotalCount ?? firstList.length;
+                
+                let allProducts = [...firstList];
+                const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+                
+                if (totalPages > 1) {
+                    const promises = [];
+                    for (let p = 2; p <= totalPages; p++) {
+                        promises.push(api.get(`/Product?pageIndex=${p}&pageSize=${PAGE_SIZE}`));
+                    }
+                    const responses = await Promise.all(promises);
+                    for (const res of responses) {
+                        const pageData = extractListFromApiData(res.data);
+                        allProducts = allProducts.concat(pageData);
+                    }
+                }
+                
+                setProducts(dedupeProductsById(allProducts).map(withFixedProductImages));
+            } catch (err) {
                 console.error('Error fetching products:', err);
                 setError('Failed to load products. Please check your internet connection and try again.');
+            } finally {
                 setLoading(false);
-            });
+            }
+        };
+        fetchAllProducts();
     }, []);
 
     // GSAP animations
@@ -92,6 +120,7 @@ const Store = () => {
             setActiveCategory(category);
             setActiveFilters({}); 
             setSearchQuery(''); 
+            setCurrentPage(1);
         }
     };
 
@@ -107,11 +136,23 @@ const Store = () => {
                     : [...current, value]
             };
         });
+        setCurrentPage(1);
     };
 
     const handleClearFilters = () => {
         setActiveFilters({});
+        setCurrentPage(1);
     };
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery]);
+
+    const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+    const paginatedProducts = filteredProducts.slice(
+        (currentPage - 1) * ITEMS_PER_PAGE,
+        currentPage * ITEMS_PER_PAGE
+    );
 
     return (
         <main id="smooth-wrapper" className="store-page-wrapper">
@@ -192,7 +233,19 @@ const Store = () => {
                                     <button onClick={() => window.location.reload()} className="btn-retry">Retry</button>
                                 </div>
                             ) : (
-                                <ProductsGrid products={filteredProducts} />
+                                <>
+                                    <ProductsGrid products={paginatedProducts} />
+                                    {totalPages > 1 && (
+                                        <Pagination 
+                                            currentPage={currentPage}
+                                            totalPages={totalPages}
+                                            onPageChange={(page) => {
+                                                setCurrentPage(page);
+                                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                                            }}
+                                        />
+                                    )}
+                                </>
                             )}
                         </div>
                     </div>
