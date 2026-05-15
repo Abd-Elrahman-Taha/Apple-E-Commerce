@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import gsap from 'gsap';
 import useStore from '../store/useStore';
+import { getProductImageUrl } from '../utils/productImages';
 import '../tracking.css';
 
 const Tracking = () => {
@@ -101,7 +102,7 @@ const Tracking = () => {
                             <div className="order-items-grid">
                                 {order.items.map((item, index) => (
                                     <div key={`${item.id}-${index}`} className="order-item-card">
-                                        <img src={item.image} alt={item.name} />
+                                        <img src={getProductImageUrl(item)} alt={item.name} />
                                         <div className="order-item-details">
                                             <h4>{item.name}</h4>
                                             <p>Qty: {item.quantity}</p>
