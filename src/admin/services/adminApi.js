@@ -1,7 +1,6 @@
 import api from '../../api/api';
 
 export const adminApi = {
-    // Products
     getProducts: (page = 1, pageSize = 50) =>
         api.get(`/Product?pageIndex=${page}&pageSize=${pageSize}`),
 
@@ -13,7 +12,6 @@ export const adminApi = {
 
     deleteProduct: (id) => api.delete(`/Admin/Products/${id}`),
 
-    // Orders
     getOrders: () => api.get('/Admin/Orders'),
 
     getOrder: (id) => api.get(`/Admin/Orders/${id}`),

@@ -1,12 +1,9 @@
 import { useEffect, useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
 import adminApi from '../services/adminApi';
 import useAdminStore from '../store/useAdminStore';
 import Toast from '../components/Toast';
 import useToast from '../hooks/useToast';
 import {
-    extractOrdersListWithFallback,
-    normalizeAdminOrders,
     normalizeAdminOrder,
     getOrderSortTimestamp,
     getOrderTotalNumber,
@@ -136,7 +133,7 @@ const Dashboard = () => {
         <div className="admin-dashboard">
             <Toast toasts={toasts} removeToast={removeToast} />
 
-            {/* ── Stats Cards ── */}
+
             <div className="admin-stats-grid">
                 <div className="admin-stat-card stat-orders">
                     <div className="stat-icon"><i className="fa-solid fa-receipt" /></div>
@@ -168,7 +165,7 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            {/* ── Order Status Breakdown ── */}
+
             <div className="admin-dashboard-row">
                 <div className="admin-card admin-order-status-card">
                     <div className="admin-card-header"><h3>Order Status</h3></div>
@@ -213,7 +210,7 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            {/* ── Tab Switcher ── */}
+
             <div className="admin-status-filters" style={{ marginBottom: 0 }}>
                 <button className={`admin-status-filter-btn ${activeTab === 'orders' ? 'active' : ''}`} onClick={() => setActiveTab('orders')}>
                     <i className="fa-solid fa-receipt" /> Orders <span className="filter-count">{filteredOrders.length}</span>
@@ -223,10 +220,10 @@ const Dashboard = () => {
                 </button>
             </div>
 
-            {/* ── Orders Tab ── */}
+
             {activeTab === 'orders' && (
                 <>
-                    {/* Status Filters */}
+
                     <div className="admin-status-filters">
                         <button className={`admin-status-filter-btn ${!statusFilter ? 'active' : ''}`} onClick={() => setStatusFilter('')}>
                             All <span className="filter-count">{safeOrders.length}</span>
@@ -246,7 +243,7 @@ const Dashboard = () => {
                         <div className="admin-empty"><i className="fa-solid fa-inbox" /><p>{statusFilter ? `No ${statusFilter} orders` : 'No orders yet'}</p></div>
                     ) : (
                         <>
-                            {/* Desktop Table */}
+
                             <div className="admin-orders-list-desktop">
                                 <div className="admin-table-wrapper">
                                     <table className="admin-table">
@@ -292,7 +289,7 @@ const Dashboard = () => {
                                 </div>
                             </div>
 
-                            {/* Mobile Cards */}
+
                             <div className="admin-orders-list-mobile">
                                 {filteredOrders.map(order => (
                                     <div key={order.id} className="admin-order-card" onClick={() => handleViewDetails(order)}>
@@ -315,7 +312,7 @@ const Dashboard = () => {
                 </>
             )}
 
-            {/* ── Customers Tab ── */}
+
             {activeTab === 'customers' && (
                 <div className="admin-card" style={{ marginTop: 16 }}>
                     <div className="admin-card-header">
@@ -381,7 +378,7 @@ const Dashboard = () => {
                 </div>
             )}
 
-            {/* ── Order Detail Modal ── */}
+
             {selectedOrder && (
                 <div className="admin-modal-overlay" onClick={() => setSelectedOrder(null)}>
                     <div className="admin-modal admin-modal-lg" onClick={e => e.stopPropagation()}>

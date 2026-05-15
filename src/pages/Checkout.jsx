@@ -18,7 +18,8 @@ const Checkout = () => {
         cvv: ''
     });
     const [errors, setErrors] = useState({});
-
+    const [submitting, setSubmitting] = useState(false);
+    const [submitError, setSubmitError] = useState(null);
 
     useEffect(() => {
         if (cart.length === 0) {
@@ -33,10 +34,9 @@ const Checkout = () => {
         );
     }, [cart.length, navigate]);
 
-
- const subtotal = cart.reduce((sum, item) => {
-    return sum + (Number(item.price) * item.quantity);
-}, 0);
+    const subtotal = cart.reduce((sum, item) => {
+        return sum + (Number(item.price) * item.quantity);
+    }, 0);
     const shipping = 0;
     const total = subtotal + shipping;
     const formatPrice = (num) => `$${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -53,21 +53,24 @@ const Checkout = () => {
         if (!formData.fullName.trim()) newErrors.fullName = 'Full Name is required';
         if (!formData.phone.trim()) newErrors.phone = 'Phone Number is required';
         if (!formData.address.trim()) newErrors.address = 'Address is required';
-        
+
         if (paymentMethod === 'card') {
             if (!formData.cardNumber.trim()) newErrors.cardNumber = 'Card Number is required';
             if (!formData.expiry.trim()) newErrors.expiry = 'Expiry Date is required';
             if (!formData.cvv.trim()) newErrors.cvv = 'CVV is required';
         }
-        
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        
-        if (validateForm()) {
+        if (!validateForm()) return;
+
+        setSubmitting(true);
+        setSubmitError(null);
+        try {
             const orderDetails = {
                 total,
                 paymentMethod,
@@ -77,13 +80,17 @@ const Checkout = () => {
                     address: formData.address
                 }
             };
-            
-            placeOrder(orderDetails);
+            await placeOrder(orderDetails);
             navigate('/tracking');
+        } catch (err) {
+            setSubmitError(err?.response?.data?.message || err?.message || 'Failed to place order. Please try again.');
+        } finally {
+            setSubmitting(false);
         }
     };
 
     if (cart.length === 0) return null;
+
 
     return (
         <main className="checkout-page-wrapper">
@@ -232,8 +239,11 @@ const Checkout = () => {
                                 <span>Total</span>
                                 <span>{formatPrice(total)}</span>
                             </div>
-                            <button type="submit" className="btn-checkout">
-                                Place Order
+                            {submitError && (
+                                <div className="error-text" style={{ marginBottom: 8, textAlign: 'center' }}>{submitError}</div>
+                            )}
+                            <button type="submit" className="btn-checkout" disabled={submitting}>
+                                {submitting ? 'Placing Order...' : 'Place Order'}
                             </button>
                         </div>
                     </div>

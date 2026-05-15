@@ -1,7 +1,3 @@
-/**
- * Shared helpers for GET /api/Admin/Orders — used by the admin store so
- * Dashboard and Orders page always read the same normalized order shape.
- */
 
 const STATUS_MAP = {
     pending: 'Pending',
@@ -28,10 +24,6 @@ function pickFirstDefined(obj, keys) {
     return undefined;
 }
 
-/**
- * Extract a list array from various API envelope shapes (ASP.NET, OData, paginated).
- * Used for admin orders and products list responses.
- */
 export function extractListFromApiData(data) {
     if (data == null) return [];
 
@@ -140,10 +132,6 @@ function arrayLooksLikeOrdersList(arr) {
     return hits >= Math.max(1, Math.ceil(arr.length * 0.4)) || idHits >= Math.ceil(arr.length * 0.5);
 }
 
-/**
- * When the API wraps the list in a non-standard envelope, depth-first search
- * for the first array of plain objects that look like orders.
- */
 export function deepExtractOrderLikeArray(value, depth = 0, maxDepth = 10, seen = new WeakSet()) {
     if (value == null || depth > maxDepth) return [];
     if (typeof value !== 'object') return [];
@@ -175,9 +163,6 @@ export function deepExtractOrderLikeArray(value, depth = 0, maxDepth = 10, seen 
     return [];
 }
 
-/**
- * Shallow extract first; if empty, try deep search (non-standard JSON shapes).
- */
 export function extractOrdersListWithFallback(data) {
     const shallow = extractListFromApiData(data);
     if (Array.isArray(shallow) && arrayLooksLikeOrdersList(shallow)) return shallow;
@@ -194,7 +179,6 @@ export function extractOrdersListWithFallback(data) {
     return Array.isArray(shallow) && shallow.length > 0 ? shallow : [];
 }
 
-/** When the envelope is unknown, pick the longest array of objects that looks like orders. */
 export function findBestOrderCandidateArray(root, maxDepth = 18) {
     const candidates = [];
 
@@ -259,9 +243,6 @@ export function getOrderTotalNumber(order) {
     return Number.isFinite(n) ? n : 0;
 }
 
-/**
- * Normalize a single admin order to camelCase fields the UI expects.
- */
 export function normalizeAdminOrder(raw) {
     if (!raw || typeof raw !== 'object') return null;
 

@@ -7,10 +7,9 @@ import {
     getDuplicateProductIdsToDelete,
 } from '../utils/productUtils';
 import {
-    getProductImageUrl,
-    getApiImageUrl,
     needsProductImageFix,
     withFixedProductImages,
+    getApiImageUrl,
 } from '../../utils/productImages';
 
 const useAdminStore = create((set, get) => ({
@@ -34,24 +33,21 @@ const useAdminStore = create((set, get) => ({
                 error?.message ||
                 'Failed to load orders';
             set({ errorOrders: message, loadingOrders: false });
-            console.error('Failed to fetch admin orders', error);
         }
     },
 
     fetchProducts: async () => {
         set({ loadingProducts: true, errorProducts: null });
         try {
-            // Backend caps pageSize at 20 — must fetch all pages
             const PAGE_SIZE = 20;
             const firstRes = await adminApi.getProducts(1, PAGE_SIZE);
             const firstRaw = firstRes.data;
             const firstData = extractListFromApiData(firstRaw);
             const totalCount = firstRaw?.totalCount ?? firstRaw?.TotalCount ?? firstData.length;
-            
+
             let allProducts = [...firstData];
             const totalPages = Math.ceil(totalCount / PAGE_SIZE);
-            
-            // Fetch remaining pages in parallel (pages 2..N)
+
             if (totalPages > 1) {
                 const pagePromises = [];
                 for (let p = 2; p <= totalPages; p++) {
@@ -63,7 +59,7 @@ const useAdminStore = create((set, get) => ({
                     allProducts = allProducts.concat(pageData);
                 }
             }
-            
+
             const products = dedupeProductsById(allProducts).map(withFixedProductImages);
             set({
                 products,
@@ -78,7 +74,6 @@ const useAdminStore = create((set, get) => ({
                 error?.message ||
                 'Failed to load products';
             set({ errorProducts: message, loadingProducts: false });
-            console.error('Failed to fetch admin products', error);
         }
     },
 
@@ -92,7 +87,6 @@ const useAdminStore = create((set, get) => ({
             }));
             return true;
         } catch (error) {
-            console.error('Failed to update order status', error);
             throw error;
         }
     },
@@ -108,12 +102,10 @@ const useAdminStore = create((set, get) => ({
             });
             return true;
         } catch (error) {
-            console.error('Failed to delete product', error);
             throw error;
         }
     },
 
-    /** Persist local image URLs for products still pointing at broken external hosts. */
     fixBrokenProductImages: async () => {
         const { products } = get();
         const toFix = products.filter(needsProductImageFix);
@@ -124,7 +116,6 @@ const useAdminStore = create((set, get) => ({
         let updated = 0;
         let failed = 0;
         for (const product of toFix) {
-            // Use full https:// URL for the API — local paths cause 400 errors
             const pictureUrl = getApiImageUrl(product);
             try {
                 await adminApi.updateProduct(product.id, {
@@ -140,9 +131,8 @@ const useAdminStore = create((set, get) => ({
                     specsJson: product.specsJson ?? null,
                 });
                 updated += 1;
-            } catch (error) {
+            } catch {
                 failed += 1;
-                console.warn(`Failed to update image for product ${product.id}`, error);
             }
         }
 
@@ -163,9 +153,8 @@ const useAdminStore = create((set, get) => ({
             try {
                 await adminApi.deleteProduct(id);
                 removed += 1;
-            } catch (error) {
+            } catch {
                 failed += 1;
-                console.warn(`Failed to delete duplicate product ${id}`, error);
             }
         }
 
